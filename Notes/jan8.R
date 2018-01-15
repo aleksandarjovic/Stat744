@@ -7,15 +7,15 @@ x3=x2[,c('temp','precip')]
 x4$temp=c2f(x$temp)
 
 #vs tidyverse version
-{
+(
 x
   %>% filter(temp>7)
   %>% select(temp,precip)
-  %>% mutate(temp=c2f(temp)} -> newx
+  %>% mutate(temp=c2f(temp)) -> newx
   
-#tibbles
+#tibbles (read up on them)
 
-#ggplot2 grammar of graphcis
+#ggplot2: "grammar of graphics"
 #find data directory for class
 ggplot(data=d,aes(x=age,y=weigt)) +
   geo_point() #in gg plot, need to keep adding layers to it
@@ -23,4 +23,3 @@ ggplot(data=d,aes(x=age,y=weigt)) +
 gg0=ggplot(data=dd,aes(x=age,y=weigt))
 gg0+geom_point()+geom_line()
 gg0+geom_point()+geom_line()+geom_smooth()
-
