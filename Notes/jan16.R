@@ -1,4 +1,4 @@
-#jan16 # continuous on y, factor on x, facet it, vs scatterplots, vs .... maybevilin/box for the side see the pairs
+#jan16
 #lecture file is: stat744/lectures/principles_1.rmd
 #information at the time of need refers to use legend when absolutely needed
 #tufte boxplot may be going overload, dont always need so minimalist that it's too unclear
