@@ -1,2 +1,2 @@
 #jan16
-#why is data$variable less preferred over data%>% mutate(class)
+#why is data$variable less preferred over data%>% mutate(class), strictly ease of read? seems to go against programming basics and relearning something (not seeing the front end of what's really happening)
