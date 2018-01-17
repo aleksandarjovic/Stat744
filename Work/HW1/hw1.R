@@ -59,10 +59,29 @@ print(plot1ai)
 
 
 ## Plot 2 ~ Examining importance of Proline content ##
-# Here we will try and use the violin plot (classically trained, this plot makes me happy), and put a thinner boxplot within. While this does stuff a lot of info into one piece
-plot2=  (ggplot(wined, aes(x=treatment,y=log10(decrease)))+
-  geom_violin(fill="gray") + dpl("f",y=2)
+# Here we will try and use the violin plot (being classically trained, this plot makes me happy). A violin plot is fine with 177 observations.
+# No need to anchor scale to 0. Magnitude isn't what's important, but position.
+plot2=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
+  #geom_boxplot(width=0.3, fill="black",alpha=1)+
+  geom_violin(trim=T,scale="area",alpha=.6)+ #Trim specified to TRUE (default anyway), since this isn't sampled from RNG, but datapoints taken. The extra tail would be misleading.
+  theme_minimal()+
+  labs(title="Proline Content", x="Wine Type",y="Proline content")+
+  scale_fill_manual(values=c("red", "darkred", "maroon"))
 )
+print(plot2)
+#ggsave("Work/HW1/Plot2.pdf")
+#Red violins appropriately... More seriously, the colours are simply aesthetic here as the plots being separated is really all that's required
+
+# Stuffing a boxplot within the violin plot doesn't add new information really, but adds clarity. Boxplot clearly shows quartiles, and Violinplot gives a better idea of the density.
+plot2a=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
+           geom_boxplot(width=0.3, fill="black",alpha=1)+
+           geom_violin(trim=T,scale="area",alpha=.6)+ #Trim specified to TRUE (default anyway), since this isn't sampled from RNG, but datapoints taken. The extra tail would be misleading.
+           theme_minimal()+
+           labs(title="Proline Content", x="Wine Type",y="Proline content")+
+           scale_fill_manual(values=c("red", "darkred", "maroon"))
+)
+print(plot2a)
+#ggsave("Work/HW1/Plot2a.pdf")
 
 #what if we took a continuous, factored it (pipes) and then took another two variables other than class
 
