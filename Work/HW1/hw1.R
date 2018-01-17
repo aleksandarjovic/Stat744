@@ -63,9 +63,9 @@ print(plot1ai)
 # Here we will try and use the violin plot, and put a thinner boxplot within. While this does stuff a lot of info into one piece
 
 
+
 #what if we took a continuous, factored it (pipes) and then took another two variables other than class
 
-# continuous on y, factor on x, facet it, vs scatterplots, vs .... maybevilin/box for the side see the pairs
 
 ## Plot 3.1415 ~ The Coveted Pie Chart -- King of Uselessness, and Number 1 spot in "Top 10 Graphs I'd Eat" ##
 # Here we can visualize the number of wines contained in each class in this dataset... largely useless, as pie-charts in general are.
