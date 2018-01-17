@@ -22,8 +22,8 @@ wined= wined %>% mutate(class=as.factor(class)) #wine classes are originally cod
 # Classification by alcohol content and hue
 
 plot1=(ggplot(
-  data=wined,aes(x=alc,y=hue,color=class))+
-    geom_point()
+  data=wined,aes(x=alc,y=hue,color=class))
+    +geom_point()
 )
 print(plot1)
 #ggsave("Work/HW1/Plot1.pdf")
