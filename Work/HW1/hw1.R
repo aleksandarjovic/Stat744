@@ -5,7 +5,7 @@ rm(list = ls())
 library(tidyverse) #loads magritter, dplyr, readr, tidyr, purr, tibble, stringr, forcats
 library(ggplot2)
 library(GGally) #trusty sidekick
-theme_set(theme_bw()) #override basic ggplot, can edit further later
+theme_set(theme_bw()) #override basic ggplot, can edit further later if req'd
 
 ## Dataset ##
 wined=read_csv('Data/Wine.csv')
@@ -16,7 +16,7 @@ names(wined)=c('class','alc','malic','ash','alcalin','mg','phenol','flavan','non
 wined= wined %>% mutate(class=as.factor(class)) #wine classes are originally coded as {1,2,3} numerics
 
 #ggpairs(wined, aes(colour=class, alpha=.5)) #EXTREMELY slow with this dataset, but good to check for a quick overview to estimate important variables for discriminating wine types
-#ggsave("Work/HW1/pairs.pdf") #the pairs plot is in the HW1 directory
+#ggsave("Work/HW1/pairs.pdf") #Pairs plot suggests some good graphs, but is more of a guideline (and does things automatically), so I'm excluding it.
 
 
 ## Plot 1 ~ Can wine be distinguished by its colour intensity and hue (referring to the variable in the dataset)? ##
@@ -40,7 +40,9 @@ plot1a=(ggplot(
   +scale_shape_manual(values = c(0,3,25))
   +labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
 )
-print(plot1a); ggsave("Work/HW1/Plot1a.pdf")
+print(plot1a)
+#ggsave("Work/HW1/Plot1a.pdf")
+
 #for comparison, here is the scatterplot with hue removed and instead we give each class a shape. I would argue this is harder to look at.
 #using shape and hue seems redundant, since if you're already using hue, the extra shape change won't really help, and adds "empty" information (i.e. green triangle VS green), since the choices themselves are mostly arbitrary
 #Open, and simple shapes were chosen on purpose, building up from lowest number of lines (the line +), then triangle, then square. Choosing Heptagon, Octagon, Nonagon would have been objectively harder to tell apart.
@@ -53,7 +55,8 @@ plot1ai=(ggplot(
   +facet_wrap(~class, labeller=label_both)
   +labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
 )
-print(plot1ai); ggsave("Work/HW1/Plot1ai.pdf")
+print(plot1ai)
+#ggsave("Work/HW1/Plot1ai.pdf")
 
 
 ## Plot 2 ~ Examining importance of Proline content ##
