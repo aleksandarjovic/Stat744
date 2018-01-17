@@ -19,11 +19,14 @@ wined= wined %>% mutate(class=as.factor(class)) #wine classes are originally cod
 #ggsave("Work/HW1/pairs.pdf") #the pairs plot is in the HW1 directory
 
 ## Plot 1 ##
-#
+# Classification by alcohol content and hue
 
-plot1=ggplot(
-  data=wined,aes(x=age,y=weigt)
+plot1=(ggplot(
+  data=wined,aes(x=alc,y=hue,color=class))+
+    geom_point()
 )
+print(plot1)
+#ggsave("Work/HW1/Plot1.pdf")
 
 # continuous on y, factor on x, facet it, vs scatterplots, vs .... maybevilin/box for the side see the pairs
 #maybe do another dataset showing time series plot, and time series scatterplot (need multidimensional perhaps predator prey)
