@@ -89,6 +89,7 @@ print(plot2a)
 
 ## Plot 3 ~ Combining ideas from parts 1 and 2 ##
 #As to not repeat ideas, I'll try something more esoteric. Suppose one was interested in seeing if they could classify "high vs low proline" given hue and colour intensity.
+#Splitting proline into greater and less than the mean is a hypothetical choice.
 #Similar rational is used for my choice of hue in the graph and transparency. Once again, a legend is necessary since there is no natural ordering to colour -- despite this, it is a small concession.
 
 wined1=wined #!!!!!could not get conditional piping to work, will add appropriate method later
