@@ -38,3 +38,4 @@ print(plot1)
 citation()
 citation('tidyverse')
 citation('ggplot2')
+#Rauser, John. "How Humans See Data". Velocity Amsterdam 2016.
