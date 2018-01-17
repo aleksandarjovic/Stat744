@@ -18,8 +18,10 @@ wined= wined %>% mutate(class=as.factor(class)) #wine classes are originally cod
 #ggpairs(wined, aes(colour=class, alpha=.5)) #EXTREMELY slow with this dataset, but good to check for a quick overview to estimate important variables for discriminating wine types
 #ggsave("Work/HW1/pairs.pdf") #the pairs plot is in the HW1 directory
 
-## Plot 1 ##
-# Classification by alcohol content and hue
+## Plot 1 ~ Classification by alcohol content and hue (the variable in the dataset referring to the wine's colour) ##
+# This dataset lends itself nicely to classification, so let's do some "visual" clustering (eyeballing).
+# According to Gestalt Pyschology, your brain already has k-means clustering (or whichever more advanced method) built into it, and just by taking a glance, "Emergence" can quickly form regions of interest.
+# Hence we can assign each class a different a different uniform. Our options are Hue, and Shape (angle). While hue ranks low generally, it is appropriate to use in this case since the colours are able to form a starker contrast against each other in the case of a scatterplot (I would argue).
 
 plot1=(ggplot(
   data=wined,aes(x=alc,y=hue,color=class))
@@ -27,6 +29,8 @@ plot1=(ggplot(
 )
 print(plot1)
 #ggsave("Work/HW1/Plot1.pdf")
+
+#what if we took a continuous, factored it (pipes) and then took another two variables other than class
 
 # continuous on y, factor on x, facet it, vs scatterplots, vs .... maybevilin/box for the side see the pairs
 #maybe do another dataset showing time series plot, and time series scatterplot (need multidimensional perhaps predator prey)
