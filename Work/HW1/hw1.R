@@ -26,8 +26,7 @@ wined= wined %>% mutate(class=as.factor(class)) #wine classes are originally cod
 # Some transparency is added to allow dense areas to appear "darker", since alpha=1 removes any potential of "colour saturation" gradient (should points overlap) which is natural and immediately understood.
 # Rather than facet, putting them on the same graphs gives us an idea of how easily we can discriminate the wines with these variables (the equivalent to "position along same scale")
 
-plot1=(ggplot(
-  data=wined,aes(x=col.int,y=hue,color=class))+
+plot1=(ggplot(data=wined,aes(x=col.int,y=hue,color=class))+
     geom_point(size=2,alpha=.6)+
     labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
 )
@@ -87,7 +86,26 @@ plot2a=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
 print(plot2a)
 #ggsave("Work/HW1/Plot2a.pdf")
 
-#what if we took a continuous, factored it (pipes) and then took another two variables other than class
+
+## Plot 3 ~ Combining ideas from parts 1 and 2 ##
+#As to not repeat ideas, I'll try something more esoteric. Suppose one was interested in seeing if they could classify "high vs low proline" given hue and colour intensity.
+#Similar rational is used for my choice of hue in the graph and transparency. Once again, a legend is necessary since there is no natural ordering to colour -- despite this, it is a small concession.
+
+wined1=wined #!!!!!could not get conditional piping to work, will add appropriate method later
+wined1$fprol="temp" #allocating memory for loop
+for (i in 1:177){
+if (wined1[i,14]>=mean(wined$prol)) wined1[i,15]="high"
+else wined1[i,15]="low"
+}
+rm(i) #memory cleanup
+
+plot3=(ggplot(data=wined1,aes(x=col.int,y=hue,color=fprol))+
+         geom_point(size=1.5,alpha=0.5)+
+         labs(title="Hue vs Colour Intensity when Comparing High vs Low Proline", x="Colour Intensity", y="Hue", colour = "Proline level\n")+
+         scale_color_manual(labels = c("above average", "below average"), values = c("blue", "red"))
+)
+print(plot3)
+#ggsave("Work/HW1/Plot3.pdf")
 
 
 ## Plot 3.1415 ~ The Coveted Pie Chart -- King of Uselessness, and Number 1 spot in "Top 10 Graphs I'd Eat" ##
