@@ -18,10 +18,13 @@ wined= wined %>% mutate(class=as.factor(class)) #wine classes are originally cod
 #ggpairs(wined, aes(colour=class, alpha=.5)) #EXTREMELY slow with this dataset, but good to check for a quick overview to estimate important variables for discriminating wine types
 #ggsave("Work/HW1/pairs.pdf") #the pairs plot is in the HW1 directory
 
+
 ## Plot 1 ~ Can wine be distinguished by its colour intensity and hue (referring to the variable in the dataset)? ##
 # This dataset lends itself nicely to classification, so let's do some "visual" clustering (eyeballing).
 # According to Gestalt Pyschology, your brain already has k-means clustering (or whichever more advanced method) built into it, and just by taking a glance, "Emergence" can quickly form regions of interest.
 # Hence we can assign each class a different a different uniform. Our options are Hue, and Shape (angle). While hue ranks low generally, it is appropriate to use in this case since the colours are able to form a starker contrast against each other in the case of a scatterplot (I would argue).
+# Some transparency is added to allow dense areas to appear "darker", since alpha=1 removes any potential of "colour saturation" gradient (should points overlap) which is natural and immediately understood.
+# Rather than facet, putting them on the same graphs gives us an idea of how easily we can discriminate the wines with these variables (the equivalent to "position along same scale")
 
 plot1=(ggplot(
   data=wined,aes(x=col.int,y=hue,color=class))
@@ -29,7 +32,18 @@ plot1=(ggplot(
     +labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
 )
 print(plot1)
-#ggsave("Work/HW1/Plot1.pdf")
+#ggsave("Work/HW1/Plot1.pdf")   #I'll be saving it once myself to the directory, but leaving it in the code for completion.
+
+plot1a=(ggplot(
+  data=wined,aes(x=col.int,y=hue, shape=class))
+  +geom_point(size=2,alpha=.6)
+  +scale_shape_manual(values = c(0,3,25))
+  +labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
+)
+print(plot1a); ggsave("Work/HW1/Plot1a.pdf")
+#for comparison, here is the scatterplot with hue removed and instead we give each class a shape. I would argue this is harder to look at.
+#using shape and hue seems redundant, since if you're already using hue, the extra shape change won't really help, and adds "empty" information (i.e. green triangle VS green), since the choices themselves are mostly arbitrary
+
 
 ## Plot 2 ~ Examining importance of Proline content ##
 # Here we will try and use the violin plot, and put a thinner boxplot within. While this does stuff a lot of info into one piece
