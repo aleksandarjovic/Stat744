@@ -43,6 +43,7 @@ plot1a=(ggplot(
 print(plot1a); ggsave("Work/HW1/Plot1a.pdf")
 #for comparison, here is the scatterplot with hue removed and instead we give each class a shape. I would argue this is harder to look at.
 #using shape and hue seems redundant, since if you're already using hue, the extra shape change won't really help, and adds "empty" information (i.e. green triangle VS green), since the choices themselves are mostly arbitrary
+#Open, and simple shapes were chosen on purpose, building up from lowest number of lines (the line +), then triangle, then square. Choosing Heptagon, Octagon, Nonagon would have been objectively harder to tell apart.
 
 
 ## Plot 2 ~ Examining importance of Proline content ##
