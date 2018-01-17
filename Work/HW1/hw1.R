@@ -27,17 +27,17 @@ wined= wined %>% mutate(class=as.factor(class)) #wine classes are originally cod
 # Rather than facet, putting them on the same graphs gives us an idea of how easily we can discriminate the wines with these variables (the equivalent to "position along same scale")
 
 plot1=(ggplot(
-  data=wined,aes(x=col.int,y=hue,color=class))
-    +geom_point(size=2,alpha=.6)
-    +labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
+  data=wined,aes(x=col.int,y=hue,color=class))+
+    geom_point(size=2,alpha=.6)+
+    labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
 )
 print(plot1)
 #ggsave("Work/HW1/Plot1.pdf")   #I'll be saving it once myself to the directory, but leaving it in the code for completion.
 
-plot1a=(ggplot(data=wined,aes(x=col.int,y=hue, shape=class))
-  +geom_point(size=2,alpha=.6)
-  +scale_shape_manual(values = c(0,3,25))
-  +labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
+plot1a=(ggplot(data=wined,aes(x=col.int,y=hue, shape=class))+
+  geom_point(size=2,alpha=.6)+
+  scale_shape_manual(values = c(0,3,25))+
+  labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
 )
 print(plot1a)
 #ggsave("Work/HW1/Plot1a.pdf")
@@ -47,12 +47,11 @@ print(plot1a)
 #Open, and simple shapes were chosen on purpose, building up from lowest number of lines (the line +), then triangle, then square. Choosing Heptagon, Octagon, Nonagon would have been objectively harder to tell apart.
 
 #It's a bit hard to see, but we could facet it to see. Here we let hue be our common aligned scale (in this case, I can't argue that it's better, but that should always be a consideration when more obvious)
-plot1ai=(ggplot(
-  data=wined,aes(x=col.int,y=hue, shape=class))
-  +geom_point(size=2,alpha=.6)
-  +scale_shape_manual(values = c(0,3,25))
-  +facet_wrap(~class, labeller=label_both)
-  +labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
+plot1ai=(ggplot(data=wined,aes(x=col.int,y=hue, shape=class))+
+  geom_point(size=2,alpha=.6)+
+  scale_shape_manual(values = c(0,3,25))+
+  facet_wrap(~class, labeller=label_both)+
+  labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
 )
 print(plot1ai)
 #ggsave("Work/HW1/Plot1ai.pdf")
@@ -61,8 +60,9 @@ print(plot1ai)
 ## Plot 2 ~ Examining importance of Proline content ##
 # Here we will try and use the violin plot (being classically trained, this plot makes me happy). A violin plot is fine with 177 observations.
 # No need to anchor scale to 0. Magnitude isn't what's important, but position.
+#I place them along a common scale. The area and angles within the plot help convey the probability of having a certain type of wine at a given proline level.
+#The angles naturally follow the area showing increase/decrease in probability (obvious, but stating it since it's in the list).
 plot2=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
-  #geom_boxplot(width=0.3, fill="black",alpha=1)+
   geom_violin(trim=T,scale="area",alpha=.6)+ #Trim specified to TRUE (default anyway), since this isn't sampled from RNG, but datapoints taken. The extra tail would be misleading.
   theme_minimal()+
   labs(title="Proline Content", x="Wine Type",y="Proline content")+
