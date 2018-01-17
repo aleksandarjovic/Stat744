@@ -72,6 +72,7 @@ plot2=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
 print(plot2)
 #ggsave("Work/HW1/Plot2.pdf")
 #Red violins appropriately... More seriously, the colours are simply aesthetic here as the plots being separated is really all that's required
+#I will comment on red perhaps not being the best choice in general, since red-green colourblindness is relatively common in the (male) population
 #The default legend is completely pointless, since the three classes are clearly labelled, and even understood without looking at the x axis (it would be my first assumption).
 
 # Stuffing a boxplot within the violin plot doesn't add new information really, but adds clarity. Boxplot clearly shows quartiles, and Violinplot gives a better idea of the density.
