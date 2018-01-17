@@ -110,8 +110,29 @@ print(plot3)
 #ggsave("Work/HW1/Plot3.pdf")
 
 #Out of curiosity, I'm adding how Hue and colour intensity looks when plotted as a bivariate distribution
-ggplot(data=wined1,aes(x=col.int,y=hue,colour=fprol))+
-  geom_density2d(size=1.1)
+#We'll start with most basic, and add layers of depth, which will in turn make the data more interesting, but also more accurate (honest? << One could purposely hide information by omitting certain factors)
+plot3a=(ggplot(data=wined1,aes(x=col.int,y=hue))+
+  geom_density2d(size=1.1)+
+  labs(title="Density plot of Hue and Colour Intensity",caption="It appears as if there are 2 clusters without separating by category",x="Colour Intensity",y="Hue")
+)
+print(plot3a)
+#ggsave("Work/HW1/Plot3a.pdf")
+
+#Now let's add the high/low proline division
+plot3b=(ggplot(data=wined1,aes(x=col.int,y=hue,colour=fprol))+
+          geom_density2d(size=1.1)+
+          labs(title="Density plot of Hue and Colour Intensity",caption="With more info, we can see that there are likely more than 2 overall classes",x="Colour Intensity",y="Hue")
+)
+print(plot3b)
+#ggsave("Work/HW1/Plot3b.pdf")
+
+#Since this wasn't the ideal way to divide the information, let's see the density plot when using the 3 classes shown
+plot3c=(ggplot(data=wined1,aes(x=col.int,y=hue,colour=class))+
+          geom_density2d(size=1.1)+
+          labs(title="Density plot of Hue and Colour Intensity",caption="The mess in the middle is somewhat resolved, but of course, more investigation would be meritted",x="Colour Intensity",y="Hue")
+)
+print(plot3c)
+#ggsave("Work/HW1/Plot3c.pdf")
 
 
 ## Plot 3.1415 ~ The Coveted Pie Chart -- King of Uselessness, and Number 1 spot in "Top 10 Graphs I'd Eat" ##
