@@ -26,7 +26,7 @@ wined= wined %>% mutate(class=as.factor(class)) #wine classes are originally cod
 # Some transparency is added to allow dense areas to appear "darker", since alpha=1 removes any potential of "colour saturation" gradient (should points overlap) which is natural and immediately understood.
 # Rather than facet, putting them on the same graphs gives us an idea of how easily we can discriminate the wines with these variables (the equivalent to "position along same scale")
 
-plot1=(ggplot(data=wined,aes(x=col.int,y=hue,color=class))+
+plot1=(ggplot(data=wined,aes(x=col.int,y=hue,colour=class))+
     geom_point(size=2,alpha=.6)+
     labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
 )
@@ -101,13 +101,17 @@ else wined1[i,15]="low"
 }
 rm(i) #memory cleanup
 
-plot3=(ggplot(data=wined1,aes(x=col.int,y=hue,color=fprol))+
+plot3=(ggplot(data=wined1,aes(x=col.int,y=hue,colour=fprol))+
          geom_point(size=1.5,alpha=0.5)+
          labs(title="Hue vs Colour Intensity when Comparing High vs Low Proline", x="Colour Intensity", y="Hue", colour = "Proline level\n")+
-         scale_color_manual(labels = c("above average", "below average"), values = c("blue", "red"))
+         scale_color_manual(labels = c("above average", "below average"), values = c("red", "blue"))
 )
 print(plot3)
 #ggsave("Work/HW1/Plot3.pdf")
+
+#Out of curiosity, I'm adding how Hue and colour intensity looks when plotted as a bivariate distribution
+ggplot(data=wined1,aes(x=col.int,y=hue,colour=fprol))+
+  geom_density2d(size=1.1)
 
 
 ## Plot 3.1415 ~ The Coveted Pie Chart -- King of Uselessness, and Number 1 spot in "Top 10 Graphs I'd Eat" ##
