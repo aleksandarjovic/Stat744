@@ -62,6 +62,7 @@ print(plot1ai)
 # No need to anchor scale to 0. Magnitude isn't what's important, but position.
 #I place them along a common scale. The area and angles within the plot help convey the probability of having a certain type of wine at a given proline level.
 #The angles naturally follow the area showing increase/decrease in probability (obvious, but stating it since it's in the list).
+#From these plots, one would ascertain that type1 wine has the highest P content, and differentiating 2 from 3 would be more difficult.
 plot2=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
   geom_violin(trim=T,scale="area",alpha=.6)+ #Trim specified to TRUE (default anyway), since this isn't sampled from RNG, but datapoints taken. The extra tail would be misleading.
   theme_minimal()+
