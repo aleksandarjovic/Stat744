@@ -34,8 +34,7 @@ plot1=(ggplot(
 print(plot1)
 #ggsave("Work/HW1/Plot1.pdf")   #I'll be saving it once myself to the directory, but leaving it in the code for completion.
 
-plot1a=(ggplot(
-  data=wined,aes(x=col.int,y=hue, shape=class))
+plot1a=(ggplot(data=wined,aes(x=col.int,y=hue, shape=class))
   +geom_point(size=2,alpha=.6)
   +scale_shape_manual(values = c(0,3,25))
   +labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
@@ -60,9 +59,10 @@ print(plot1ai)
 
 
 ## Plot 2 ~ Examining importance of Proline content ##
-# Here we will try and use the violin plot, and put a thinner boxplot within. While this does stuff a lot of info into one piece
-
-
+# Here we will try and use the violin plot (classically trained, this plot makes me happy), and put a thinner boxplot within. While this does stuff a lot of info into one piece
+plot2=  (ggplot(wined, aes(x=treatment,y=log10(decrease)))+
+  geom_violin(fill="gray") + dpl("f",y=2)
+)
 
 #what if we took a continuous, factored it (pipes) and then took another two variables other than class
 
@@ -81,6 +81,8 @@ Pi+ coord_polar("y",start=0)
 #the pi chart must be built out of the bar graph... interesting, too bad I'll never use it.
 #Of course, that table given by "temp" is really all that's needed to convey this exact piece of information clearly, as the pie chart is impossible to distinguish.
 #I won't be printing this to the repo for obvious reasons, but this stupid "joke" graph took me way longer than I anticipated, so I'm leaving it (it shows off some tidyverse piping).
+#side note, "Pi" is poorly named on purpose (since "pi" is a default object in R)
+
 
 ## Citations ##
 citation()
