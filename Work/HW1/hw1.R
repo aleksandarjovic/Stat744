@@ -66,19 +66,22 @@ plot2=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
   geom_violin(trim=T,scale="area",alpha=.6)+ #Trim specified to TRUE (default anyway), since this isn't sampled from RNG, but datapoints taken. The extra tail would be misleading.
   theme_minimal()+
   labs(title="Proline Content", x="Wine Type",y="Proline content")+
-  scale_fill_manual(values=c("red", "darkred", "maroon"))
+  scale_fill_manual(values=c("red", "darkred", "maroon"))+
+  theme(legend.position="none")
 )
 print(plot2)
 #ggsave("Work/HW1/Plot2.pdf")
 #Red violins appropriately... More seriously, the colours are simply aesthetic here as the plots being separated is really all that's required
+#The default legend is completely pointless, since the three classes are clearly labelled, and even understood without looking at the x axis (it would be my first assumption).
 
 # Stuffing a boxplot within the violin plot doesn't add new information really, but adds clarity. Boxplot clearly shows quartiles, and Violinplot gives a better idea of the density.
 plot2a=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
-           geom_boxplot(width=0.3, fill="black",alpha=1)+
-           geom_violin(trim=T,scale="area",alpha=.6)+ #Trim specified to TRUE (default anyway), since this isn't sampled from RNG, but datapoints taken. The extra tail would be misleading.
-           theme_minimal()+
-           labs(title="Proline Content", x="Wine Type",y="Proline content")+
-           scale_fill_manual(values=c("red", "darkred", "maroon"))
+          geom_boxplot(width=0.3, fill="black",alpha=1)+
+          geom_violin(trim=T,scale="area",alpha=.6)+ #Trim specified to TRUE (default anyway), since this isn't sampled from RNG, but datapoints taken. The extra tail would be misleading.
+          theme_minimal()+
+          labs(title="Proline Content", x="Wine Type",y="Proline content")+
+          scale_fill_manual(values=c("red", "darkred", "maroon"))+
+          theme(legend.position="none")
 )
 print(plot2a)
 #ggsave("Work/HW1/Plot2a.pdf")
