@@ -1,9 +1,12 @@
 ### Homework 1. Tues Jan 16. Aleksandar Jovic ###
 
 ## Headers ##
-rm(list = ls())
-library(tidyverse) #loads magritter, dplyr, readr, tidyr, purr, tibble, stringr, forcats
-library(ggplot2)
+## BMB: please **DO NOT DO THIS**
+## leave it up to the user to clean their own workspace rather than
+##  pre-emptively cleaning their workspace
+##      rm(list = ls())
+library(tidyverse) #loads magrittr, dplyr, readr, tidyr, purr, tibble, stringr, forcats
+library(ggplot2)  ## BMB: my version of tidyverse also loads ggplot2
 library(GGally) #trusty sidekick
 theme_set(theme_bw()) #override basic ggplot, can edit further later if req'd
 
@@ -13,16 +16,28 @@ wined=read_csv('Data/Wine.csv')
 #This dataset is a multivariate dataset which could be used for classification analysis of three wine types: {1,2,3}
 names(wined)=c('class','alc','malic','ash','alcalin','mg','phenol','flavan','nonflav','proanth','col.int','hue','diluted','prol')
 
+## BMB: possibly better to use dplyr::rename() -- it explicitly references
+##  the previous & new names rather than assuming you got the order right
+
 wined= wined %>% mutate(class=as.factor(class)) #wine classes are originally coded as {1,2,3} numerics
 
 #ggpairs(wined, aes(colour=class, alpha=.5)) #EXTREMELY slow with this dataset, but good to check for a quick overview to estimate important variables for discriminating wine types
+## BMB: if you want a quick subsitute for this you can get most of it via:
+
+cvec <- RColorBrewer::brewer.pal(n=3,"Dark2")
+pairs(wined[,-1],gap=0,col=cvec[wined$class],cex=0.5)
+
+library(corrplot)
+corrplot.mixed(cor(wined[,-1]),lower="ellipse",upper="number")
+
 #ggsave("Work/HW1/pairs.pdf") #Pairs plot suggests some good graphs, but is more of a guideline (and does things automatically), so I'm excluding it.
 
 
 ## Plot 1 ~ Can wine be distinguished by its colour intensity and hue (referring to the variable in the dataset)? ##
 # This dataset lends itself nicely to classification, so let's do some "visual" clustering (eyeballing).
-# According to Gestalt Pyschology, your brain already has k-means clustering (or whichever more advanced method) built into it, and just by taking a glance, "Emergence" can quickly form regions of interest.
-# Hence we can assign each class a different a different uniform. Our options are Hue, and Shape (angle). While hue ranks low generally, it is appropriate to use in this case since the colours are able to form a starker contrast against each other in the case of a scatterplot (I would argue).
+# According to Gestalt Psychology, your brain already has k-means clustering (or whichever more advanced method) built into it, and just by taking a glance, "Emergence" can quickly form regions of interest.
+##  BMB I'd rather leave k-means out of it and just say "ability to cluster data" ...
+# Hence we can assign each class a different uniform [BMB: ?? aesthetic??]. Our options are Hue, and Shape (angle). While hue ranks low generally, it is appropriate to use in this case since the colours are able to form a starker contrast against each other in the case of a scatterplot (I would argue). ## BMB: agree
 # Some transparency is added to allow dense areas to appear "darker", since alpha=1 removes any potential of "colour saturation" gradient (should points overlap) which is natural and immediately understood.
 # Rather than facet, putting them on the same graphs gives us an idea of how easily we can discriminate the wines with these variables (the equivalent to "position along same scale")
 
@@ -43,7 +58,17 @@ print(plot1a)
 
 #for comparison, here is the scatterplot with hue removed and instead we give each class a shape. I would argue this is harder to look at.
 #using shape and hue seems redundant, since if you're already using hue, the extra shape change won't really help, and adds "empty" information (i.e. green triangle VS green), since the choices themselves are mostly arbitrary
+
+## BMB: not really a problem to add redundancy if you have it to spare
+
 #Open, and simple shapes were chosen on purpose, building up from lowest number of lines (the line +), then triangle, then square. Choosing Heptagon, Octagon, Nonagon would have been objectively harder to tell apart.
+## BMB: yup. Open vs closed is good too.  You can use letters: sometimes that's useful
+
+plot1a=(ggplot(data=wined,aes(x=col.int,y=hue, shape=class))+
+  geom_text(aes(label=class))+
+  labs(title="Hue vs Colour Intensity Scatterplot", caption="Can wine conoisseurs tell a wine by looking at it?",x="Colour Intensity", y="Hue")
+)
+## you could also use scale_shape_manual(shape=as.character(1:3))
 
 #It's a bit hard to see, but we could facet it to see. Here we let hue be our common aligned scale (in this case, I can't argue that it's better, but that should always be a consideration when more obvious)
 plot1ai=(ggplot(data=wined,aes(x=col.int,y=hue, shape=class))+
@@ -54,7 +79,7 @@ plot1ai=(ggplot(data=wined,aes(x=col.int,y=hue, shape=class))+
 )
 print(plot1ai)
 #ggsave("Work/HW1/Plot1ai.pdf")
-
+## BMB: agree it's not better ...
 
 ## Plot 2 ~ Examining importance of Proline content ##
 # Here we will try and use the violin plot (being classically trained, this plot makes me happy). A violin plot is fine with 177 observations.
@@ -63,7 +88,8 @@ print(plot1ai)
 #The angles naturally follow the area showing increase/decrease in probability (obvious, but stating it since it's in the list).
 #From these plots, one would ascertain that type1 wine has the highest P content, and differentiating 2 from 3 would be more difficult.
 plot2=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
-  geom_violin(trim=T,scale="area",alpha=.6)+ #Trim specified to TRUE (default anyway), since this isn't sampled from RNG, but datapoints taken. The extra tail would be misleading.
+  geom_violin(trim=TRUE,scale="area",alpha=.6)+ #Trim specified to TRUE (default anyway), since this isn't sampled from RNG, but datapoints taken. The extra tail would be misleading.
+  ## BMB: always use TRUE rather than the T shortcut
   theme_minimal()+
   labs(title="Proline Content", x="Wine Type",y="Proline content")+
   scale_fill_manual(values=c("red", "darkred", "maroon"))+
@@ -74,6 +100,8 @@ print(plot2)
 #Red violins appropriately... More seriously, the colours are simply aesthetic here as the plots being separated is really all that's required
 #I will comment on red perhaps not being the best choice in general, since red-green colourblindness is relatively common in the (male) population
 #The default legend is completely pointless, since the three classes are clearly labelled, and even understood without looking at the x axis (it would be my first assumption).
+## BMB: but since colour is redundant, it's harmless - it's just making the
+##  picture prettier (not a bad thing). Colorblind people won't lose much.
 
 # Stuffing a boxplot within the violin plot doesn't add new information really, but adds clarity. Boxplot clearly shows quartiles, and Violinplot gives a better idea of the density.
 plot2a=  (ggplot(wined, aes(x=class, y=prol, fill=class))+
@@ -99,7 +127,18 @@ for (i in 1:177){
 if (wined1[i,14]>=mean(wined$prol)) wined1[i,15]="high"
 else wined1[i,15]="low"
 }
-rm(i) #memory cleanup
+
+wined %>% mutate(fprol=factor(ifelse(prol>mean(prol),"high","low")))
+
+## or (probably better)
+
+wined <- wined %>% mutate(fprol=cut(prol,breaks=c(0,mean(prol),Inf),
+                           labels=c("low","high")))
+
+
+## you could also use one of the cut_*() functions from ggplot2
+
+rm(i) #memory cleanup  ## BMB: very surprising if this is necessary
 
 plot3=(ggplot(data=wined1,aes(x=col.int,y=hue,colour=fprol))+
          geom_point(size=1.5,alpha=0.5)+
@@ -135,6 +174,7 @@ plot3c=(ggplot(data=wined1,aes(x=col.int,y=hue,colour=class))+
 print(plot3c)
 #ggsave("Work/HW1/Plot3c.pdf")
 
+## BMB: interesting. I might consider reducing the number of contours
 
 ## Plot 3.1415 ~ The Coveted Pie Chart -- King of Uselessness, and Number 1 spot in "Top 10 Graphs I'd Eat" ##
 # Here we can visualize the number of wines contained in each class in this dataset... largely useless, as pie-charts in general are.
@@ -152,6 +192,7 @@ Pi+ coord_polar("y",start=0)
 #I won't be printing this to the repo for obvious reasons, but this stupid "joke" graph took me way longer than I anticipated, so I'm leaving it (it shows off some tidyverse piping).
 #side note, "Pi" is poorly named on purpose (since "pi" is a default object in R)
 
+## BMB: you don't necessarily need to join the pie-chart haters ... there are many possible non-silly opinions
 
 ## Citations ##
 citation()
