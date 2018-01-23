@@ -30,6 +30,7 @@ plot2=(ggplot(data=x,aes(x=disease,y=year,size=cases,colour=vaccine))+ #how to g
 )
 print(plot2)
 #make sure size is using AREA not radius
+#discuss failed attempt at x$vaccine!=FALSE
 
 
 
@@ -39,6 +40,7 @@ print(plot2)
 ##Time series with vaccine shown as center
 
 ##How effective are vaccines? graphing rate of change (cut off until start of vaccine?) faster decrease is better.
+#if we're looking at effectiveness, is the "before" really as important?
 #mutate with diff()
 
 
