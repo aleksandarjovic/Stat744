@@ -25,6 +25,7 @@ print(plot1)
 ##Time series with vaccine shown as center
 
 ##How effective are vaccines? graphing rate of change (cut off until start of vaccine?) faster decrease is better.
+#mutate with diff()
 
 
 #extra credit hypothetical... i.e. creation of chart, and how to use data
