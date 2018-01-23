@@ -5,6 +5,7 @@ date: '2018-01-22'
 output: html_document
 ---
 
+* Check online for code done in class
 * separated between exploratory and confirmatory analysis 
 * don't be a robot with your analysis but also don't be so lax 
 * p-hacking: for any given study, can find a convincing correlation; we could be p-hacking even if we don't know it 
