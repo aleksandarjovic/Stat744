@@ -18,6 +18,16 @@ plot1=(ggplot(data=x,aes(x=disease,y=year,size=cases))+
 print(plot1)
 #ggsave("Work/HW2/Replicate.pdf")
 # Using AREA rather than RADIUS (since radius grows by a squared factor -- misleading)
+plot2=(ggplot(data=x,aes(x=disease,y=year,size=cases,colour=vaccine))+ #how to get them all same colour ########### IS there a nice way to do this without mutating vaccine column into something new.. i.e. specific colour for vaccine if column FALSE
+         geom_point(alpha=0.5)+
+         scale_y_reverse()+ #just to match, traditionally, I feel that climbing indicates years advancing (arbitrary cultural convention)scale_y_reverse()+
+         #scale_size_area()+ #this thins it out? what is this??
+         labs(title="Replication of Jia You's Vaccine",x="Disease", y="Year")+
+         guides(colour = FALSE)+ # removes from legend
+         labs(size='Cases Recorded')+
+         theme(legend.position = "bottom")
+)
+print(plot2)
 
 
 ##Time series (simple but most natural, no reason to overcomplicate)
