@@ -30,6 +30,6 @@ print(plot1)
 
 ## Citations ##
 citation()
-citation('tidyverse') #et al.
+citation('tidyverse') #et al. {magrittr, dplyr, readr, tidyr, purr, tibble, stringr, forcats, ggplot2}
 citation('GGally')
 #You, Jia. "Here’s the visual proof of why vaccines do more good than harm". www.sciencemag.org. April 27, 2017.
