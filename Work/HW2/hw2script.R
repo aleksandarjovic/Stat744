@@ -1,8 +1,8 @@
 ### HW2 ###
 
-#remove this: use true, do not clear memory for user#
 library(tidyverse) #loads magrittr, dplyr, readr, tidyr, purr, tibble, stringr, forcats, ggplot2
 library(GGally)
+#theme_set(theme_bw())  #??? we'll see how things look
 
 x=readr::read_csv("https://bbolker.github.io/stat744/data/vaccine_data_online.csv")
 
