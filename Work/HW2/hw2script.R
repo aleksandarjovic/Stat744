@@ -7,11 +7,13 @@ library(GGally)
 x=readr::read_csv("https://bbolker.github.io/stat744/data/vaccine_data_online.csv")
 
 #Reproducing original graph, for exercise, not that I'm feeling particularly uncreative.
-plot1=(ggplot(data=x,aes(x=disease,y=year,alpha=0.5))+
-         geom_point()+
+plot1=(ggplot(data=x,aes(x=disease,y=year,size=cases))+
+         geom_point(colour='skyblue3',alpha=0.5)+
          scale_y_reverse()+ #just to match, traditionally, I feel that climbing indicates years advancing (arbitrary cultural convention)scale_y_reverse()+
-         #scale_size_area(size=cases)+
-         labs(title="Replication of Jia You's Vaccine",x="Disease", y="Year")
+         #scale_size_area()+ #this thins it out? what is this??
+         labs(title="Replication of Jia You's Vaccine",x="Disease", y="Year")#+
+         #add in specific events?? remove colour and colour the event
+         #legend needs fixing
 )
 print(plot1)
 #ggsave("Work/HW2/Replicate.pdf")
