@@ -11,10 +11,10 @@ plot1=(ggplot(data=x,aes(x=disease,y=year,alpha=0.5))+
          geom_point()+
          scale_y_reverse()+ #just to match, traditionally, I feel that climbing indicates years advancing (arbitrary cultural convention)scale_y_reverse()+
          #scale_size_area(size=cases)+
-         labs(title="Recreation of Jia You's Vaccine",x="Disease", y="Year")
+         labs(title="Replication of Jia You's Vaccine",x="Disease", y="Year")
 )
 print(plot1)
-#ggsave("Work/HW2/Plot1.pdf")
+#ggsave("Work/HW2/Replicate.pdf")
 # Using AREA rather than RADIUS (since radius grows by a squared factor -- misleading)
 
 
