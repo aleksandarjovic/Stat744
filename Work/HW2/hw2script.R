@@ -9,6 +9,7 @@ x=readr::read_csv("https://bbolker.github.io/stat744/data/vaccine_data_online.cs
 #Reproducing original graph
 plot1=(ggplot(data=x,aes(x=disease,y=year,alpha=0.5))+
          geom_point()+
+         scale_y_reverse()+ #just to match, traditionally, I feel that climbing indicates years advancing (arbitrary cultural convention)scale_y_reverse()+
          #scale_size_area(size=cases)+
          labs(title="Recreation of Jia You's Vaccine",x="Disease", y="Year")
 )
