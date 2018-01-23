@@ -6,7 +6,7 @@ library(GGally)
 
 x=readr::read_csv("https://bbolker.github.io/stat744/data/vaccine_data_online.csv")
 
-#Reproducing original graph
+#Reproducing original graph, for exercise, not that I'm feeling particularly uncreative.
 plot1=(ggplot(data=x,aes(x=disease,y=year,alpha=0.5))+
          geom_point()+
          scale_y_reverse()+ #just to match, traditionally, I feel that climbing indicates years advancing (arbitrary cultural convention)scale_y_reverse()+
