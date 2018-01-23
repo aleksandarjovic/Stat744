@@ -9,25 +9,45 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown COMMENT
+###
 
-* check
-*check 2
+FIRST HALF {Individual variables, Bivariate data}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Banking refers to pool, where 90 degrees is easier. Recall Rauser, important data's angles should be stretched so most of it is at 90 degrees (easier to visualize).
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Showed smokers having stroner lungs is misleading since adults have stronger lungs than children, so would need to differentiate that.
 
-```{r cars}
-summary(cars)
+In a scatterplot where points stack, can remedy this with:
+
+* jittering: (scattering points a bit, while may be misleading, if it's understood, helps spread stacked points).
+* transparency: using alpha=0.4 (or whatever)
+* area: but be careful with area, since ggplot will show scale 1 to 2, but 1 to 2 may not be exactly twice as large (i.e. disconnected from PHYSICAL representation of real life)
+
+ggplot uses quadratic LOESS smoother:---->   gg_smooth()
+
+* Once we show this loess trend after differentiating smokers/nonsmokers, we can see smokers aren't actually stronger lungs than non smokers (see plot)
+* faceting for sex gives even more info (i.e. comparison btwn sex obviously)
+
+LOESS is local, but not robust.
+LOESS function has a choice of family (Gaussian vs sensitivity). Sensitivity claims robust alternative. In geom.smooth() there is an argument to pass how the function works... look into later
+
+With newer technology, we could get a wireframe, which helps us view data in 3D.
+
+When looking at contour plot:
+
+* Darker values being lower, and lighter values higher is awkward
+* Continuous scale, showing discrete regions is odd
+* Adding dark lines around teach zone makes things very clear (since hue can be hard to distinguish)
+* Anchoring y at 0 would help since it's physical quantity would be nice here.
+
+Hexbin fast algorithm (good for large sets).
+
+Colour principles in notes.
+
+SECOND HALF {Multiple dimensions, Multiple factors}
+
+
+
+```{r cars, echo= TRUE}
+1+2
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

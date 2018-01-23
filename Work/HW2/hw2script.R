@@ -25,9 +25,13 @@ plot2=(ggplot(data=x,aes(x=disease,y=year,size=cases,colour=vaccine))+ #how to g
          labs(title="Replication of Jia You's Vaccine",x="Disease", y="Year")+
          guides(colour = FALSE)+ # removes from legend
          labs(size='Cases Recorded')+
-         theme(legend.position = "bottom")
+         theme(legend.position = "bottom")+
+         scale_size(range=c(1,12)) #!!!!!!geting weird error with this *****!!!!!!
 )
 print(plot2)
+#make sure size is using AREA not radius
+
+
 
 
 ##Time series (simple but most natural, no reason to overcomplicate)
