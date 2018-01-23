@@ -1,0 +1,61 @@
+---
+title: "Monday Jan22"
+author: "AJ"
+date: '2018-01-22'
+output: html_document
+---
+
+* separated between exploratory and confirmatory analysis 
+* don't be a robot with your analysis but also don't be so lax 
+* p-hacking: for any given study, can find a convincing correlation; we could be p-hacking even if we don't know it 
+    - always checking for decent correlations
+* if we explore too much, we might find relationships that are there or not
+* set up a validation dataset if it is big; sub-sampling as a first step 
+
+
+* contrast: how we think about plotting data (parametric vs non-parametric)
+* what's wrong with the plot: mean and stdev are going below 0 
+* data exploration: need to find a sensible scale but want to be non-parametric 
+* box-plots are good for medium datasets or violin plots
+
+
+Bike example
+
+* bike rentals per hour in weather conditions
+* bar chart would be better with widths, like widths could be the number of hours we found ourselves in each condition
+* standard errors: "heavy" is long; don't have many days with heavy rain, sample size is too small, or one day where 700 people rented bikes and it was raining 
+* how do we find out if this is because of sample size?
+* we could look at the stdevs; looking at the apparent spread and there is less variability on heavy rain; conclude indirectly that sample size is small
+* bike data in shape, tukey outliers at top
+* violin plot: why is there a long tail? a point at the top, exactly 713 bike rentals is less likely than exactly 13 bike rentals per hour; could try a Poisson; for proportional change, use log scale 
+* what to do if there are 0s in the dataset? quantiles would move
+* box-plot example: the width of each box is proportional to the number of hours that were observed like that 
+
+
+Log scales
+
+* data span < 3 decades, use numbers that humans can read 
+* embrace logs, but recall these are not physical values 
+* natural logs not as axis values for physical values, but use for proportional difference 
+* spend time to thinking how to label scales
+
+
+bivariate data
+
+* banking to 45 degrees, set aspect ratio for this 
+* experiment with different aspect ratios 
+* lattice package in R, does banking automatically, in ggplot, have to use trial and error 
+
+
+smoking data
+
+* children that smoked had a higher FEV 
+* confounding variables
+* smokers that are older could have other factors affecting the lungs (could have more irritants)
+* 11-19 year old that are smoking have bigger lungs?
+
+
+scatter plots
+
+* depending on the number of points we have 
+* going to go over over-plotting tomorrow 

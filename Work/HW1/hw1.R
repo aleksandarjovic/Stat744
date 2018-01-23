@@ -1,10 +1,7 @@
 ### Homework 1. Tues Jan 16. Aleksandar Jovic ###
 
 ## Headers ##
-## BMB: please **DO NOT DO THIS**
-## leave it up to the user to clean their own workspace rather than
-##  pre-emptively cleaning their workspace
-##      rm(list = ls())
+## Dr. Bolker's comments: "BMB" ##
 library(tidyverse) #loads magrittr, dplyr, readr, tidyr, purr, tibble, stringr, forcats
 library(ggplot2)  ## BMB: my version of tidyverse also loads ggplot2
 library(GGally) #trusty sidekick
