@@ -46,8 +46,111 @@ Colour principles in notes.
 
 SECOND HALF {Multiple dimensions, Multiple factors}
 
+```{r library preamble, echo=TRUE}
+library(pgmm)
+library(skimr)
+library(ggplot2); theme_set(theme_bw())
+library(GGally)
+library(corrplot)
+library(agridat)
+library(dplyr)
+data(olive)
+```
 
+* Joining region data.
+* pairs plot
+* ggpairs
+* convert area, region back to factors
+* keep factors in reading order?
 
-```{r cars, echo= TRUE}
-1+2
+Big data: number of observations
+
+* javascript? D3 js?
+* summarize first: contour vs hexbin, loess vs gam
+
+High-dimensional: Multiway, hypervariate
+
+```{r example, echo=TRUE}
+library(sos)
+findFn('barley')
+?RSiteSearch
+help.search('barley')
+fisher.barley
+
+gg0 = (ggplot(fisher.barley)+
+         geom_boxplot(aes(x=gen,y=yield,fill=factor(year)))
+  
+)
+print(gg0) #notice, bars will DODGE automatically
+
+#See what happens when we add "notch=TRUE"
+gg0a = (ggplot(fisher.barley)+
+         geom_boxplot(aes(x=gen,y=yield), #factor year taken out
+                      notch=TRUE) #not the best graph for notching
+  
+)
+print(gg0a)
+
+gg0b = (ggplot(fisher.barley,aes(x=gen,y=yield,colour=env))+
+         #geom_boxplot(aes(x=gen,y=yield,fill=factor(year)))
+          geom_point()+geom_line()+
+          facet_wrap(~year)
+)
+print(gg0b)
+
+ff= (fisher.barley
+     %>% mutate(gen=reorder(gen,yield),
+                env=reorder(env,yield),
+                year=factor(year))
+)
+gg0c = (ggplot(ff,
+               aes(x=env,y=yield,colour=year, group=year))+
+         #geom_boxplot(aes(x=gen,y=yield,fill=factor(year)))
+          geom_point()+
+          geom_line()+
+          facet_wrap(~gen,nrow=1)
+)
+
+print(gg0c)
+```
+
+The function windows() is the microsoft equivalent to quartz() ... this puts plots out into a new window.
+
+Example:
+
+```{r windows fn, echo=TRUE}
+windows(); #quartz() #for mac
+print(gg0c)
+```
+
+Moving onto next example:
+
+```{r olive example} 
+#remember, echo=TRUE is the default.. i.e. shows the code
+data(olive)
+#bolker not a fan of throwing out region info by turning them into numbers, when they could have just been left as factors... side note
+# he will push the csv to the repo so we can use the olive data set in a more useful way (keeping information so its not lost and relegated to the info file)
+olive_regions= read_csv("Data/olive_regions.csv")  ### NEED TO FIX THIS WORKING DIRECTORY AFTER GETTING THE DATASET FROM BOLKER'S REPO
+
+olive2=(full_join(olive,olive_regions,
+          by=c("Region"="region_num",
+                "Area"="area_num"))
+        %>% select(-c(Region,Area))
+) #could make everything pipey, but fine for now
+
+colvec=c("red","blue","orange")
+pairs(olive2[,1:8],gap=0,col=colvec[as.numeric(olive2$region)]) 
+#gap=0 removes the empty space which Tufte argues is wasted and detracts from data
+
+#now try GGpairs version
+ggpairs(olive2,
+        columns=1:8,
+        mapping=aes(colour=region))
+
+corrplot(cor(olive2[,1:8]),method="ellipse")
+corrplot.mixed(cor(olive2[,1:8]))
+
+theme(panel.spacing=grid::unit(0,"lines"))+
+  scale_colour_brewer(palette="Dark2")
+#recall, our theme is set to black and white, typically will get colour as factors here
 ```
