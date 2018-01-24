@@ -1,36 +1,38 @@
-### HW2 ###
+### Homework 2: So why do we let doctors give our kids vaccines? Aleksandar Jovic. Jan 24, 2018 ###
 
 library(tidyverse) #loads magrittr, dplyr, readr, tidyr, purr, tibble, stringr, forcats, ggplot2
 library(GGally)
 #theme_set(theme_bw())  #??? we'll see how things look
 
-x=readr::read_csv("https://bbolker.github.io/stat744/data/vaccine_data_online.csv")
+datraw=readr::read_csv("https://bbolker.github.io/stat744/data/vaccine_data_online.csv")
+vac=datraw[,2:5]   #filtering out what I don't need
 
-#Reproducing original graph, for exercise, not that I'm feeling particularly uncreative.
-plot1=(ggplot(data=x,aes(x=disease,y=year,size=cases))+
-         geom_point(colour='skyblue3',alpha=0.5)+
-         scale_y_reverse()+ #just to match, traditionally, I feel that climbing indicates years advancing (arbitrary cultural convention)scale_y_reverse()+
-         #scale_size_area()+ #this thins it out? what is this??
-         labs(title="Replication of Jia You's Vaccine",x="Disease", y="Year")#+
-         #add in specific events?? remove colour and colour the event
-         #legend needs fixing
-)
-print(plot1)
-#ggsave("Work/HW2/Replicate.pdf")
-# Using AREA rather than RADIUS (since radius grows by a squared factor -- misleading)
-plot2=(ggplot(data=x,aes(x=disease,y=year,size=cases,colour=vaccine))+ #how to get them all same colour ########### IS there a nice way to do this without mutating vaccine column into something new.. i.e. specific colour for vaccine if column FALSE
-         geom_point(alpha=0.5)+
-         scale_y_reverse()+ #just to match, traditionally, I feel that climbing indicates years advancing (arbitrary cultural convention)scale_y_reverse()+
-         #scale_size_area()+ #this thins it out? what is this??
-         labs(title="Replication of Jia You's Vaccine",x="Disease", y="Year")+
+vac1= (vac %>%
+         filter(vaccine!=FALSE)
+) #creates vector
+
+# Comments justifications will be posted below, and into the .Rmd
+
+#~ Reproducing original graph, for exercise, not that I'm feeling particularly uncreative. ~#
+replica=(ggplot()+ 
+         geom_point(data=vac,aes(x=disease,y=year,size=cases,colour=vaccine),alpha=0.45)+
+         scale_color_manual(values = c(rep("goldenrod", 5),"skyblue3",rep("goldenrod", 7)))+ #checking table(x$vaccine) shows the non-vaccine dates are 6th inthe list, see below for what I tried to get working, as I recognize this is a bit spaghetti-code-ish in its current iteration
+         labs(title="Replication of Jia You's Vaccine Graph",x="Disease", y="Year")+
          guides(colour = FALSE)+ # removes from legend
          labs(size='Cases Recorded')+
          theme(legend.position = "bottom")+
-         scale_size(range=c(1,12)) #!!!!!!geting weird error with this *****!!!!!!
+         scale_y_reverse(breaks = seq(from=2015, to=1945, by = -5))+ #traditionally, I feel that climbing indicates years advancing (arbitrary cultural convention), but set this up to match author
+         scale_size_area(max_size = 20)+ #scaling by size AREA, but adding a bit of meat to the max size so the dots are easier to distinguish (much like the), this also ensures values of 0 take an area of 0.
+         geom_point(data=vac1,aes(x=disease,y=year,size=5),colour='black') #for whatever reason, this final layer, warped my legend, making the circles full black... which is fine since thelegend just helps with understanding how area represents number of cases... id say this is acceptable.
 )
-print(plot2)
-#make sure size is using AREA not radius
-#discuss failed attempt at x$vaccine!=FALSE
+print(replica)
+#ggsave("Work/HW2/Replicate.pdf")
+
+#note, I piped vac1 after I wrote the spaghetti version of my replica.
+# Using AREA rather than RADIUS (since radius grows by a squared factor -- misleading)
+# I tried passing the following argument to pinpoint the vaccine dates and colour them differently data= x$vaccine!=FALSE ... I deleted what I was trying, but it was also a mess.
+# Rather than specifying a new column which contains that data, then adding a new layer which recolours that specific point with the orange, is there a way to have the data chosen conditionally? some sort of 'if' statement seems like it could do the trick?
+
 
 
 
@@ -52,3 +54,5 @@ citation()
 citation('tidyverse') #et al. {magrittr, dplyr, readr, tidyr, purr, tibble, stringr, forcats, ggplot2}
 citation('GGally')
 #You, Jia. "Here’s the visual proof of why vaccines do more good than harm". www.sciencemag.org. April 27, 2017.
+
+# To answer the title (which was purposely mocking anti-vaxxers), we use vaccines because they work.
