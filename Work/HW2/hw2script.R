@@ -72,6 +72,7 @@ ts=(ggplot()+
       guides(size = FALSE)
 )
 print(ts)
+#ggsave("Work/HW2/FullTimeSeries.pdf")
 #Different shapes are used instead of just "dots" since some of the lines seem to overlap and it can get confusing which vaccine was implemented when.
 
 #Measles was EXTREMELY contagious apparently, hence, it stretches the y-axis so it can fit, making the other lines harder to see
@@ -87,7 +88,7 @@ ts1=(ggplot()+
       guides(size = FALSE)
 )
 print(ts1)
-
+#ggsave("Work/HW2/NoMeaslesTS.pdf")
 
 ##Time series with vaccine shown as center
 
@@ -96,7 +97,12 @@ print(ts1)
 #mutate with diff()
 
 
-#extra credit hypothetical... i.e. creation of chart, and how to use data
+#~Discussion~#
+#pros and cons of graph. Area gives quick overview really easily, but is it misleading? The overlap of the bubbles can fool the eye.
+#The time series often shows downward trends before the vaccine's implementation... One might argue the decrease of the disease due to concentrated effort by physicians to combat disease, and vaccine being implemented during that downhill slope is spurious information.
+
+
+#?????????????????????????extra credit hypothetical... i.e. creation of chart, and how to use data
 
 
 ## Citations ##
