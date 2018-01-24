@@ -23,7 +23,8 @@ replica=(ggplot()+
          #theme(legend.position = "bottom")+ #less squish horizontally, however, I opted to leave this back as default, less squish vertically makes it easier to differentiate the circle (less overlap), and the horizontal wasnt in trouble ever anyway
          scale_y_reverse(breaks = seq(from=2015, to=1945, by = -5))+ #traditionally, I feel that climbing indicates years advancing (arbitrary cultural convention), but set this up to match author
          scale_size_area(max_size = 20)+ #scaling by size AREA, but adding a bit of meat to the max size so the dots are easier to distinguish (much like the), this also ensures values of 0 take an area of 0.
-         geom_point(data=vac1,aes(x=disease,y=year,size=5),colour='black') #for whatever reason, this final layer, warped my legend, making the circles full black... which is fine since thelegend just helps with understanding how area represents number of cases... id say this is acceptable.
+         geom_point(data=vac1,aes(x=disease,y=year,size=5),colour='black')+ #for whatever reason, this final layer, warped my legend, making the circles full black... which is fine since thelegend just helps with understanding how area represents number of cases... id say this is acceptable.
+         theme(axis.text.x = element_text(size=6.2)) #so the labels donotverlap ... very confusing and ugly
 )
 print(replica)
 #ggsave("Work/HW2/Replicate.pdf")
