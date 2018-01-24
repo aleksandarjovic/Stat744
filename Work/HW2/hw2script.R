@@ -112,7 +112,7 @@ print(ts1)
 tlog=(ggplot()+
       geom_line(data=vac, aes(x=year,y=log(cases),colour=disease),pch=1.6)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
       scale_x_continuous(breaks = seq(from=1945, to=2015, by = 5))+
-      labs(title="Log-Cases of 9 Diseases from 1945-2015 with their Vaccine Implementation",x="Year",y="Cases",colour="Disease", shape="Disease")+ #to avoid two separate legend boxes
+      labs(title="Log-Cases of 9 Diseases from 1945-2015 with their Vaccine Implementation",x="Year",y="Log Cases",colour="Disease", shape="Disease")+ #to avoid two separate legend boxes
       geom_point(data=vac1, aes(x=year,y=log(cases),shape=disease,pch=5),colour='black')+ #same problem.. I can't altar size at all? So I use pch
       scale_shape_manual(values=c(15,16,17,18,3,4,11,13,8))+ #since ggplot wont do more than 6 automatically
       guides(size = FALSE)
@@ -190,7 +190,8 @@ for(i in 1:length(vac$cases)) {
 vac2support= (vac2 %>%
          filter(vaccine!=FALSE)
 )
-# WHY DO I NEED TO UNLIST() MY Y VARIABLE, "cases" NOWW!??!??!! #https://stackoverflow.com/questions/29459866/ggplot2-error-geom-point-requires-the-following-missing-aesthetics-y
+# WHY DO I NEED TO UNLIST() MY Y VARIABLE "cases" NOWW!??!??!! #https://stackoverflow.com/questions/29459866/ggplot2-error-geom-point-requires-the-following-missing-aesthetics-y
+# Hello 4am, my old friend...
 prov=(ggplot()+
            geom_line(data=vac2, aes(x=year, y=unlist(cases), colour=disease),pch=1.6)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
            scale_x_continuous(breaks = seq(from=1945, to=2015, by = 5))+
@@ -208,7 +209,59 @@ print(prov+facet_wrap(~disease))
 # Note, this is similar to the previous facet which we didn't print, it'll be the same thing however, just with all the cases on a 0 to 1 scale (show's the same picture)
 
 
-##Time series with vaccine shown as center
+##Time series with vaccine shown as center. Let's see how "Years since first vaccine implemented" makes things look.
+cent=vac
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Diphtheria") (cent$year[i]=vac$year[i]-1947) #value just read from vac1 (crude)
+}
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Pertussis") (cent$year[i]=vac$year[i]-1949) #value just read from vac1 (crude)
+}
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Polio") (cent$year[i]=vac$year[i]-1955) #value just read from vac1 (crude)
+}
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Measles") (cent$year[i]=vac$year[i]-1963) #value just read from vac1 (crude)
+}
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Mumps") (cent$year[i]=vac$year[i]-1967) #value just read from vac1 (crude)
+}
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Rubella") (cent$year[i]=vac$year[i]-1969) #value just read from vac1 (crude)
+}
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Hepatitis B") (cent$year[i]=vac$year[i]-1981) #value just read from vac1 (crude)
+}
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Hepatitis A") (cent$year[i]=vac$year[i]-1995) #value just read from vac1 (crude)
+}
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Chickenpox") (cent$year[i]=vac$year[i]-1995) #value just read from vac1 (crude)
+}
+# With all of our data centered now around year since first vaccine implemented, we could repeat the whole process. (but won't)
+# Let's see the plain graph, note, no extra points required this time, but we the information of the year itself (are newer vaccines better?)
+cents=(
+  ggplot(data=cent)+
+    geom_line(aes(x=year,y=cases,colour=disease))+
+    geom_vline(xintercept=0, colour='black',alpha=0.3)+
+    labs(title="Time Series Centred around First Respective Vaccine",x="Years since First Vaccine",y="Cases")
+)
+print(cents) #Again, we suffer from some clutter (9 lines are the main issue, and stretch of Measles... perhaps try this with 0 to 1 scale?)
+#ggsave("Work/HW2/BasicCentred.pdf")
+
+#Once again, let's see this with log, a good scale for proportional change
+logcents=(
+  ggplot(data=cent)+
+    geom_line(aes(x=year,y=log(cases),colour=disease))+
+    geom_vline(xintercept=0, colour='black',alpha=0.3)+
+    labs(title="Time Series Centred around First Respective Vaccine (Log)",x="Years since First Vaccine",y="Log Cases")
+)
+print(logcents)
+#ggsave("Work/HW2/LogCentred.pdf")
+
+
+
+
 
 ##How effective are vaccines? graphing rate of change (cut off until start of vaccine?) faster decrease is better.
 #if we're looking at effectiveness, is the "before" really as important?
