@@ -4,7 +4,6 @@
 #~Preamble~#
 library(tidyverse) #loads magrittr, dplyr, readr, tidyr, purr, tibble, stringr, forcats, ggplot2
 library(GGally)
-#theme_set(theme_bw())  #??? we'll see how things look
 # Comments justifications will be posted in this document, and the .Rmd
 
 
@@ -61,6 +60,7 @@ print(replica)
 #print(failedreplica)
 
 
+theme_set(theme_bw())  #for my own plots
 #~Time series~#
 # We are looking at how numbers change with respect to time, while a time series may appear as a banal option to graphics high-society, it is certainly effective. In its simplicity and intuitive presentation, it can clealry deliver the data at a glance.
 # Quick note on all these lines before we get started. I considered faceting the lines, but faceting 9 lines, keeping them all on the same line (for common y axis), ends up very squished.
@@ -119,6 +119,7 @@ tlog=(ggplot()+
 )
 print(tlog)
 #ggsave("Work/HW2/logTS.pdf")
+
 
 #Could also compare each graph proportionally by looking at the data as a percentage of the maximum number of cases recorded. This scaling method would be tedious, but I'll show how I would pipe it to make this possible:
 
@@ -189,17 +190,22 @@ for(i in 1:length(vac$cases)) {
 vac2support= (vac2 %>%
          filter(vaccine!=FALSE)
 )
-
+# WHY DO I NEED TO UNLIST() MY Y VARIABLE, "cases" NOWW!??!??!! #https://stackoverflow.com/questions/29459866/ggplot2-error-geom-point-requires-the-following-missing-aesthetics-y
 prov=(ggplot()+
-           geom_line(data=vac2, aes(x=year, y=cases, colour=disease),pch=1.6)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
+           geom_line(data=vac2, aes(x=year, y=unlist(cases), colour=disease),pch=1.6)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
            scale_x_continuous(breaks = seq(from=1945, to=2015, by = 5))+
            scale_y_continuous(limits=c(0,1))+
-           labs(title="Reported Cases of 9 Diseases from 1945-2015 with their Vaccine Implementation",x="Year",y="Cases",colour="Disease", shape="Disease")+ #to avoid two separate legend boxes
-           geom_point(data=vac2support, aes(x=year, y=cases, shape=disease,pch=5),colour='black')+ #same problem.. I can't altar size at all? So I use pch
+           labs(title="Proportional Cases of 9 Diseases from 1945-2015 with their Vaccine Implementation",x="Year",y="Proportion of Max Cases",colour="Disease", shape="Disease")+ #to avoid two separate legend boxes
+           geom_point(data=vac2support, aes(x=year, y=unlist(cases), shape=disease,pch=5),colour='black')+ #same problem.. I can't altar size at all? So I use pch
            scale_shape_manual(values=c(15,16,17,18,3,4,11,13,8))+ #since ggplot wont do more than 6 automatically
            guides(size = FALSE)
 )
 print(prov)
+#ggsave("Work/HW2/ProportionalTS.pdf")
+# EXTREMELY hard to see due to all the lines there. This is where modern technology of hiding/showing particular lines at will would be nice... Let's just facet this, a fair trade off to get a clearer picture.
+print(prov+facet_wrap(~disease))
+#ggsave("Work/HW2/facetedPropTS.pdf")
+# Note, this is similar to the previous facet which we didn't print, it'll be the same thing however, just with all the cases on a 0 to 1 scale (show's the same picture)
 
 
 ##Time series with vaccine shown as center
