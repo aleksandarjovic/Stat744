@@ -63,8 +63,12 @@ print(replica)
 
 #~Time series~#
 # We are looking at how numbers change with respect to time, while a time series may appear as a banal option to graphics high-society, it is certainly effective. In its simplicity and intuitive presentation, it can clealry deliver the data at a glance.
+# Quick note on all these lines before we get started. I considered faceting the lines, but faceting 9 lines, keeping them all on the same line (for common y axis), ends up very squished.
+# Looking at 9 lines on the same graph may look like one of those cereal box puzzles, but blowing the graph up on a larger screen alleviates a lot of the duress. So depends on time/place, but I left it unfaceted since I like looking at the multicoloured lines overlapping (even though I don't dislike 9 black and white graphs).
+
+# Linear scale are simple, but natural for something like this.
 ts=(ggplot()+
-      geom_line(data=vac, aes(x=year,y=cases,colour=disease),pch=1.3)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
+      geom_line(data=vac, aes(x=year,y=cases,colour=disease),pch=1.6)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
       scale_x_continuous(breaks = seq(from=1945, to=2015, by = 5))+
       labs(title="Reported Cases of 9 Diseases from 1945-2015 with their Vaccine Implementation",x="Year",y="Cases",colour="Disease", shape="Disease")+ #to avoid two separate legend boxes
       geom_point(data=vac1, aes(x=year,y=cases,shape=disease,pch=5),colour='black')+ #same problem.. I can't altar size at all? So I use pch
@@ -73,22 +77,130 @@ ts=(ggplot()+
 )
 print(ts)
 #ggsave("Work/HW2/FullTimeSeries.pdf")
-#Different shapes are used instead of just "dots" since some of the lines seem to overlap and it can get confusing which vaccine was implemented when.
+# Different shapes are used instead of just "dots" since some of the lines seem to overlap and it can get confusing which vaccine was implemented when.
+# The colour is left default... 9 colours, ggplot evenly spaces the colours from the rainbow... perhaps this could be contrasted better?
 
-#Measles was EXTREMELY contagious apparently, hence, it stretches the y-axis so it can fit, making the other lines harder to see
+# Measles was EXTREMELY contagious apparently, hence, it stretches the y-axis so it can fit, making the other lines harder to see
+# Like I said earlier, 9 faceted graphs aleviates the issues of stretched graph, but let's see it without measles
 nomeas= vac %>% filter(disease!='Measles')
 nomeas1= nomeas %>% filter(vaccine!=FALSE)
 
 ts1=(ggplot()+
-      geom_line(data=nomeas, aes(x=year,y=cases,colour=disease),pch=1.3)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
+      geom_line(data=nomeas, aes(x=year,y=cases,colour=disease),pch=1.6)+ 
       scale_x_continuous(breaks = seq(from=1945, to=2015, by = 5))+
-      labs(title="Measles Omitted",caption="For clearer view at the other lines",x="Year",y="Cases",colour="Disease", shape="Disease")+ #to avoid two separate legend boxes
-      geom_point(data=nomeas1, aes(x=year,y=cases,shape=disease,pch=5),colour='black')+ #same problem.. I can't altar size at all? So I use pch
-      scale_shape_manual(values=c(15,16,17,18,3,4,11,13))+ #since ggplot wont do more than 6 automatically
+      labs(title="Measles Omitted",caption="For clearer view at the other lines",x="Year",y="Cases",colour="Disease", shape="Disease")+ 
+      geom_point(data=nomeas1, aes(x=year,y=cases,shape=disease,pch=5),colour='black')+ 
+      scale_shape_manual(values=c(15,16,17,18,3,4,11,13))+ 
       guides(size = FALSE)
 )
 print(ts1)
 #ggsave("Work/HW2/NoMeaslesTS.pdf")
+
+# Let's see it faceted. It is very hard to see unless you have a big projector or monitor, but is helpful in viewing trends uncluttered.
+#facts=(
+#  ggplot()+
+#      geom_line(data=vac, aes(x=year,y=cases,colour=disease),pch=1.6)+ 
+#      scale_x_continuous(breaks = seq(from=1945, to=2015, by = 5))+
+#      labs(title="Faceted look",x="Year",y="Cases")+
+#      geom_point(data=vac1, aes(x=year,y=cases),colour='black')
+#      #+facet_wrap(~disease,nrow=1)   #pick to sort by row or by col
+#      #+facet_wrap(~disease,ncol=1)
+#)
+#print(facts)
+
+#How about a log scale, since we're looking at the change of proportions over time.
+tlog=(ggplot()+
+      geom_line(data=vac, aes(x=year,y=log(cases),colour=disease),pch=1.6)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
+      scale_x_continuous(breaks = seq(from=1945, to=2015, by = 5))+
+      labs(title="Log-Cases of 9 Diseases from 1945-2015 with their Vaccine Implementation",x="Year",y="Cases",colour="Disease", shape="Disease")+ #to avoid two separate legend boxes
+      geom_point(data=vac1, aes(x=year,y=log(cases),shape=disease,pch=5),colour='black')+ #same problem.. I can't altar size at all? So I use pch
+      scale_shape_manual(values=c(15,16,17,18,3,4,11,13,8))+ #since ggplot wont do more than 6 automatically
+      guides(size = FALSE)
+)
+print(tlog)
+#ggsave("Work/HW2/logTS.pdf")
+
+#Could also compare each graph proportionally by looking at the data as a percentage of the maximum number of cases recorded. This scaling method would be tedious, but I'll show how I would pipe it to make this possible:
+
+vac2=vac #for use later in my for loop since I can't do this with pipes
+
+#First, find the max... let's say of chickenpox:
+vac %>%
+  filter (disease=="Chickenpox") %>%
+  summarize (maxCP=max(cases))->maxCP;maxCP
+#Now make chickenpox cases go on a scale from 0 to 1... repeat for the rest and we can compare percentage of cases
+#!!! Here is where I need help. I tried many ways to do this in a pipe !!!
+# data %>% filter (condition) "WITHOUT LOSING MY OTHER DATA" %>% mutate (something specific)
+#example: vac%>% filter (disease=="Chickenpox") %>% mutate (cases=cases/maxCP)
+#instead, a for loop:
+
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Chickenpox") (vac2$cases[i]=vac$cases[i]/maxCP)
+}
+#now let's do the rest
+vac %>%
+  filter (disease=="Diphtheria") %>%
+  summarize (temp=max(cases))->temp
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Diphtheria") (vac2$cases[i]=vac$cases[i]/temp)
+}
+vac %>%
+  filter (disease=="Pertussis") %>%
+  summarize (temp=max(cases))->temp
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Pertussis") (vac2$cases[i]=vac$cases[i]/temp)
+}
+vac %>%
+  filter (disease=="Polio") %>%
+  summarize (temp=max(cases))->temp
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Polio") (vac2$cases[i]=vac$cases[i]/temp)
+}
+vac %>%
+  filter (disease=="Measles") %>%
+  summarize (temp=max(cases))->temp
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Measles") (vac2$cases[i]=vac$cases[i]/temp)
+}
+vac %>%
+  filter (disease=="Mumps") %>%
+  summarize (temp=max(cases))->temp
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Mumps") (vac2$cases[i]=vac$cases[i]/temp)
+}
+vac %>%
+  filter (disease=="Rubella") %>%
+  summarize (temp=max(cases))->temp
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Rubella") (vac2$cases[i]=vac$cases[i]/temp)
+}
+vac %>%
+  filter (disease=="Hepatitis B") %>%
+  summarize (temp=max(cases))->temp
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Hepatitis B") (vac2$cases[i]=vac$cases[i]/temp)
+}
+vac %>%
+  filter (disease=="Hepatitis A") %>%
+  summarize (temp=max(cases))->temp
+for(i in 1:length(vac$cases)) {
+  if (vac$disease[i]=="Hepatitis A") (vac2$cases[i]=vac$cases[i]/temp)
+}
+vac2support= (vac2 %>%
+         filter(vaccine!=FALSE)
+)
+
+prov=(ggplot()+
+           geom_line(data=vac2, aes(x=year, y=cases, colour=disease),pch=1.6)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
+           scale_x_continuous(breaks = seq(from=1945, to=2015, by = 5))+
+           scale_y_continuous(limits=c(0,1))+
+           labs(title="Reported Cases of 9 Diseases from 1945-2015 with their Vaccine Implementation",x="Year",y="Cases",colour="Disease", shape="Disease")+ #to avoid two separate legend boxes
+           geom_point(data=vac2support, aes(x=year, y=cases, shape=disease,pch=5),colour='black')+ #same problem.. I can't altar size at all? So I use pch
+           scale_shape_manual(values=c(15,16,17,18,3,4,11,13,8))+ #since ggplot wont do more than 6 automatically
+           guides(size = FALSE)
+)
+print(prov)
+
 
 ##Time series with vaccine shown as center
 
