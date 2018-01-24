@@ -258,8 +258,35 @@ logcents=(
 )
 print(logcents)
 #ggsave("Work/HW2/LogCentred.pdf")
+#This graph appeals to me. Similar to Jia You's graph, the cluttered mess appears to be down-trending as a whole, which is the desired impression we're looking to give. (I say that, because although I agree vaccines work, we can play around with the data all sorts of ways to get an effect). That being said, Using a log scale is an honest choice, and centering the information at the first year of the vaccine is also an honest choice to see if things change (before/after comparison).
 
 
+#~Rate of Change~#
+# The final thing I'd like to look at is the rate of change. Since we're looking to see if vaccines are effective, growth (or negative growth in this case) is important, so taking the derivative (or difference in R's case) and plotting this directly could be of interest.
+# As inspired by Rauser's segment on population growth of continents:
+# We can get our derivative using the following piping (using R's difference function to estimate the derivative... is there a better way built in?)
+deriv = vac %>%
+  group_by(disease) %>%
+  arrange(year) %>%
+  mutate(change=c(NA,diff(cases)))
+
+#Let's plot our rate of change time series
+ratets=ggplot(deriv, aes(year, change/cases, group=disease, colour=disease))+
+  geom_line()+labs(title="Rate of change of vaccines",y="dy/dx")
+print(ratets)
+#I won't be printing this one because:
+#1. It looks like quite the mess, however, values are generally negative, implying vaccines work... BUT
+#2. Where is the reference point of the vaccines start? Is it just a placebo, or do they work. Let's do the same thing, but with our centered data:
+
+deriv = cent %>%
+  group_by(disease) %>%
+  arrange(year) %>%
+  mutate(change=c(NA,diff(cases)))
+
+ratets=ggplot(deriv, aes(year, change/cases, group=disease, colour=disease))+
+  geom_line()+labs(title="Rate of change of vaccines",y="dy/dx")+geom_vline(xintercept=0, colour='black',alpha=0.3)
+print(ratets)
+#ggsave("Work/HW2/Derivative.pdf")
 
 
 
