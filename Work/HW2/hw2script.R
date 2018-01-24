@@ -6,9 +6,24 @@ library(tidyverse) #loads magrittr, dplyr, readr, tidyr, purr, tibble, stringr, 
 library(GGally)
 
 
-#~Discussion~# Since this is lengthy, I'll put all my comments up front.
-#pros and cons of graph. Area gives quick overview really easily, but is it misleading? The overlap of the bubbles can fool the eye.
-#The time series often shows downward trends before the vaccine's implementation... One might argue the decrease of the disease due to concentrated effort by physicians to combat disease, and vaccine being implemented during that downhill slope is spurious information.
+#~Discussion~# Since this is lengthy, I'll put this at the top.
+# + vs - of Jia's graph:
+# At a glance, it looks great. Everyone can see the bubbles shrinking into nothingness as the years advance, at SOME point after the orange dot (vaccine).
+# Her graph is relatively uncluttered, but I have some issues with it:
+# There is no x-axis, year (independent variable typically), is listed DOWN the y-axis (opposite of convention), typically when something advances forward (like time) it is culturally associated as going up.
+# The bubbles rely on area, and while she doesn't use radius (correctly), the bubbles still overlap, and it becomes hard to differentiate. This is especially bad, since it appears to mask the fact that the bubbles beging to shrink BEFORE the first orange circle is present (cases decreasing BEFORE vaccine implemented??).
+# Her diseases seem to be spread sporadically (again, no intuitive x-axis), but it is nice that everything fits on a common y-axis (year).
+
+# My suggestions:
+# We have a physical number changing over time... This lends itself PERFECTLY to a time series (line graph with time on x).
+# In this case, lines (angles) are better on the gestalt heirarchy (Rauser). To remedy that there are 9 different diseases, we can plot everything on the same plot using hue (separating wavelength evenly), or alternatively use facets.
+# Keeping everything on one graph gives aligned and common axes, which is a huge plus.
+# One issue was measles had a huge number of cases, causing the y-axis to be stretched (making it hard to differentiate the other lines: 45 degree rule). I tried seeing how transforming cases into a (0,1) would look (Percentage of cases, compared to the max). This loses magnitude, but allows us to compare vaccine effectiveness by looking at proportional change over time as well.
+# The lines also make trends easier to see. I plotted the vaccine implementation onto the graphs to see how the line changes after the vaccine.
+# Log scale for the number of cases also help to see how things change proportionally over time, so I showed that to compare.
+# I was then curious to see what would happen if we put ALL the diseases centred around their first vaccine. Since we're looking to see how vaccines affect disease growth, it would be good to compare them like that (since we're already comparing apples and oranges figuratively: Different diseases AND vaccines are very different).
+# While this does lose the information of when the vaccine was created, it keeps things on a common axis, and let's us see things from a new perspective.
+# Finally, I was interested in seeing how the RATE OF CHANGE graph would look, since that was implied by the goal of the original document.
 
 
 #~Dataset~#
@@ -197,12 +212,12 @@ vac2support= (vac2 %>%
 # WHY DO I NEED TO UNLIST() MY Y VARIABLE "cases" NOWW!??!??!! #https://stackoverflow.com/questions/29459866/ggplot2-error-geom-point-requires-the-following-missing-aesthetics-y
 # Hello 4am, my old friend...
 prov=(ggplot()+
-           geom_line(data=vac2, aes(x=year, y=unlist(cases), colour=disease),pch=1.6)+ #size>1 makes the line look too fat? even 1.001.... Instead pch works much more efficiently?? What's the difference
+           geom_line(data=vac2, aes(x=year, y=unlist(cases), colour=disease),pch=1.6)+
            scale_x_continuous(breaks = seq(from=1945, to=2015, by = 5))+
            scale_y_continuous(limits=c(0,1))+
-           labs(title="Proportional Cases of 9 Diseases from 1945-2015 with their Vaccine Implementation",x="Year",y="Proportion of Max Cases",colour="Disease", shape="Disease")+ #to avoid two separate legend boxes
-           geom_point(data=vac2support, aes(x=year, y=unlist(cases), shape=disease,pch=5),colour='black')+ #same problem.. I can't altar size at all? So I use pch
-           scale_shape_manual(values=c(15,16,17,18,3,4,11,13,8))+ #since ggplot wont do more than 6 automatically
+           labs(title="Proportional Cases of 9 Diseases from 1945-2015 with their Vaccine Implementation",x="Year",y="Proportion of Max Cases",colour="Disease", shape="Disease")+ 
+           geom_point(data=vac2support, aes(x=year, y=unlist(cases), shape=disease,pch=5),colour='black')+ 
+           scale_shape_manual(values=c(15,16,17,18,3,4,11,13,8))+ 
            guides(size = FALSE)
 )
 print(prov)
@@ -219,28 +234,28 @@ for(i in 1:length(vac$cases)) {
   if (vac$disease[i]=="Diphtheria") (cent$year[i]=vac$year[i]-1947) #value just read from vac1 (crude)
 }
 for(i in 1:length(vac$cases)) {
-  if (vac$disease[i]=="Pertussis") (cent$year[i]=vac$year[i]-1949) #value just read from vac1 (crude)
+  if (vac$disease[i]=="Pertussis") (cent$year[i]=vac$year[i]-1949) 
 }
 for(i in 1:length(vac$cases)) {
-  if (vac$disease[i]=="Polio") (cent$year[i]=vac$year[i]-1955) #value just read from vac1 (crude)
+  if (vac$disease[i]=="Polio") (cent$year[i]=vac$year[i]-1955) 
 }
 for(i in 1:length(vac$cases)) {
-  if (vac$disease[i]=="Measles") (cent$year[i]=vac$year[i]-1963) #value just read from vac1 (crude)
+  if (vac$disease[i]=="Measles") (cent$year[i]=vac$year[i]-1963)
 }
 for(i in 1:length(vac$cases)) {
-  if (vac$disease[i]=="Mumps") (cent$year[i]=vac$year[i]-1967) #value just read from vac1 (crude)
+  if (vac$disease[i]=="Mumps") (cent$year[i]=vac$year[i]-1967) 
 }
 for(i in 1:length(vac$cases)) {
-  if (vac$disease[i]=="Rubella") (cent$year[i]=vac$year[i]-1969) #value just read from vac1 (crude)
+  if (vac$disease[i]=="Rubella") (cent$year[i]=vac$year[i]-1969)
 }
 for(i in 1:length(vac$cases)) {
-  if (vac$disease[i]=="Hepatitis B") (cent$year[i]=vac$year[i]-1981) #value just read from vac1 (crude)
+  if (vac$disease[i]=="Hepatitis B") (cent$year[i]=vac$year[i]-1981) 
 }
 for(i in 1:length(vac$cases)) {
-  if (vac$disease[i]=="Hepatitis A") (cent$year[i]=vac$year[i]-1995) #value just read from vac1 (crude)
+  if (vac$disease[i]=="Hepatitis A") (cent$year[i]=vac$year[i]-1995) 
 }
 for(i in 1:length(vac$cases)) {
-  if (vac$disease[i]=="Chickenpox") (cent$year[i]=vac$year[i]-1995) #value just read from vac1 (crude)
+  if (vac$disease[i]=="Chickenpox") (cent$year[i]=vac$year[i]-1995)
 }
 # With all of our data centered now around year since first vaccine implemented, we could repeat the whole process. (but won't)
 # Let's see the plain graph, note, no extra points required this time, but we the information of the year itself (are newer vaccines better?)
@@ -306,5 +321,4 @@ citation('tidyverse') #et al. {magrittr, dplyr, readr, tidyr, purr, tibble, stri
 citation('GGally')
 #You, Jia. "Here’s the visual proof of why vaccines do more good than harm". www.sciencemag.org. April 27, 2017.
 
-
-# To answer the title (which was intentionally flippant towards anti-vaxxers), we use vaccines because they work (as seen in the selected data above).
+# To answer the title (which was intentionally flippant towards anti-vaxxers), we use vaccines because they work. While this data doesn't show the whole picture, it does show most of it, and we can use this data to create effective graphs which demonstrate the original thesis.
