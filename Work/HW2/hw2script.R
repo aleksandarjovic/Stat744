@@ -1,4 +1,4 @@
-### Homework 2: So why do we let doctors give our kids vaccines? Aleksandar Jovic. Jan 24, 2018 ###
+### Homework 2: Why do we let doctors give our kids vaccines? Aleksandar Jovic. Jan 24, 2018 ###
 
 library(tidyverse) #loads magrittr, dplyr, readr, tidyr, purr, tibble, stringr, forcats, ggplot2
 library(GGally)
@@ -7,11 +7,16 @@ library(GGally)
 datraw=readr::read_csv("https://bbolker.github.io/stat744/data/vaccine_data_online.csv")
 vac=datraw[,2:5]   #filtering out what I don't need
 
+# Comments justifications will be posted in this document, and the .Rmd
+#Some oddities with the data:
+#1. Mumps had 0 recorded cases at the inception of the vaccine. Were they just not recording it before the creation of the vaccine? Unlikely. We could impute this by setting the value to some value based on the expected growth from the next 5 years (regression backwards).
+#2. Hepatitis' A and B, and Polio have two vaccine inceptions. (Again going with the idea that we're comparing vaccine effectiveness, while not every vaccine is made the same, nor is it for the same disease -- however the overall idea is fine)
+#3. Pertussis seems to have a resurgence after the mid-80s (perhaps vaccine was distributed less, perhaps it became less effective).
+
 vac1= (vac %>%
          filter(vaccine!=FALSE)
 ) #creates new mini version of data which will let me easily plot specifically the vaccine implementations
 
-# Comments justifications will be posted below, and into the .Rmd
 
 #~ Reproducing original graph, for exercise, not that I'm feeling particularly uncreative. ~#
 replica=(ggplot()+ 
@@ -51,8 +56,10 @@ print(replica)
 #print(replica)
 
 
+#~Time series~#
+# We are looking at how numbers change with respect to time, while a time series may appear as a banal option to graphics high-society, it is certainly effective. In its simplicity and intuitive presentation, it can clealry deliver the data at a glance.
 
-##Time series (simple but most natural, no reason to overcomplicate)
+
 
 ##Time series with vaccine shown as center
 
@@ -70,4 +77,5 @@ citation('tidyverse') #et al. {magrittr, dplyr, readr, tidyr, purr, tibble, stri
 citation('GGally')
 #You, Jia. "Here’s the visual proof of why vaccines do more good than harm". www.sciencemag.org. April 27, 2017.
 
-# To answer the title (which was purposely mocking anti-vaxxers), we use vaccines because they work.
+
+# To answer the title (which was intentionally flippant towards anti-vaxxers), we use vaccines because they work (as seen in the selected data above).
