@@ -1,10 +1,14 @@
-### Homework 2: Why do we let doctors give our kids vaccines? Aleksandar Jovic. Jan 24, 2018 ###
+### Homework 2: Why do we let doctors give our kids vaccines? Aleksandar Jovic. Jan 24, 2018 ### I'm still working on R markdowns, so I'll put all comments in here for now.
 
 
 #~Preamble~#
 library(tidyverse) #loads magrittr, dplyr, readr, tidyr, purr, tibble, stringr, forcats, ggplot2
 library(GGally)
-# Comments justifications will be posted in this document, and the .Rmd
+
+
+#~Discussion~# Since this is lengthy, I'll put all my comments up front.
+#pros and cons of graph. Area gives quick overview really easily, but is it misleading? The overlap of the bubbles can fool the eye.
+#The time series often shows downward trends before the vaccine's implementation... One might argue the decrease of the disease due to concentrated effort by physicians to combat disease, and vaccine being implemented during that downhill slope is spurious information.
 
 
 #~Dataset~#
@@ -261,7 +265,7 @@ print(logcents)
 #This graph appeals to me. Similar to Jia You's graph, the cluttered mess appears to be down-trending as a whole, which is the desired impression we're looking to give. (I say that, because although I agree vaccines work, we can play around with the data all sorts of ways to get an effect). That being said, Using a log scale is an honest choice, and centering the information at the first year of the vaccine is also an honest choice to see if things change (before/after comparison).
 
 
-#~Rate of Change~#
+#~Rate of Change~#   ***Disclaimer: I have no idea if this worked out the way I wanted it to. Without a smooth curve, derivatives may be a futile idea, but I think it worked to an extent... let me know ***
 # The final thing I'd like to look at is the rate of change. Since we're looking to see if vaccines are effective, growth (or negative growth in this case) is important, so taking the derivative (or difference in R's case) and plotting this directly could be of interest.
 # As inspired by Rauser's segment on population growth of continents:
 # We can get our derivative using the following piping (using R's difference function to estimate the derivative... is there a better way built in?)
@@ -284,23 +288,16 @@ deriv = cent %>%
   mutate(change=c(NA,diff(cases)))
 
 ratets=ggplot(deriv, aes(year, change/cases, group=disease, colour=disease))+
-  geom_line()+labs(title="Rate of change of vaccines",y="dy/dx")+geom_vline(xintercept=0, colour='black',alpha=0.3)
+  geom_line()+labs(title="Rate of change of Cases from the First Year of Vaccine",y="dy/dx",x="years from first vaccine")+geom_vline(xintercept=0, colour='black',alpha=0.3)
 print(ratets)
 #ggsave("Work/HW2/Derivative.pdf")
+#And now we have a noisy mess, but with a frame of reference. We see that generally vaccines appear to cause a downward trend in cases. The noise seems to bounce strongly off the line into the negative direction when compared with the years BEFORE the vaccine. Interestingly, not a single increase.
+#Not a single increase.... even before the vaccine was implemented.... While we know vaccines work (according to science), did Jia You pick the most honest way to portray her data? Based on her conclusion, I would say there are some points of contention.
+# I would have expected the noise to be spiking in the positive direction BEFORE vaccines, and back into the negative direction AFTER.
 
 
-
-##How effective are vaccines? graphing rate of change (cut off until start of vaccine?) faster decrease is better.
-#if we're looking at effectiveness, is the "before" really as important?
-#mutate with diff()
-
-
-#~Discussion~#
-#pros and cons of graph. Area gives quick overview really easily, but is it misleading? The overlap of the bubbles can fool the eye.
-#The time series often shows downward trends before the vaccine's implementation... One might argue the decrease of the disease due to concentrated effort by physicians to combat disease, and vaccine being implemented during that downhill slope is spurious information.
-
-
-#?????????????????????????extra credit hypothetical... i.e. creation of chart, and how to use data
+#Extra credit: Sadly, I couldn't find this information. I specifically looked for Pertussis since it is the disease that appeared to make a resurgence.
+#I was curious to see if I could plot the levels of Pertussis against the coverage (as coverage dipped, Pertussis would increase)... but for another time perhaps.
 
 
 ## Citations ##
