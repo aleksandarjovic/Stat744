@@ -15,7 +15,7 @@ vac1= (vac %>%
 
 #~ Reproducing original graph, for exercise, not that I'm feeling particularly uncreative. ~#
 replica=(ggplot()+ 
-         geom_point(data=vac,aes(x=disease,y=year,size=cases,colour=vaccine),alpha=0.45)+
+         geom_point(data=vac,aes(x=disease,y=year,size=cases,colour=vaccine),alpha=0.35)+
          scale_color_manual(values = c(rep("goldenrod", 5),"skyblue3",rep("goldenrod", 7)))+ #checking table(x$vaccine) shows the non-vaccine dates are 6th inthe list, see below for what I tried to get working, as I recognize this is a bit spaghetti-code-ish in its current iteration
          labs(title="Replication of Jia You's Vaccine Graph",x="Disease", y="Year")+
          guides(colour = FALSE)+ # removes from legend
