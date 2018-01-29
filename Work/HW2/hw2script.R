@@ -229,6 +229,7 @@ print(prov+facet_wrap(~disease))
 
 
 ##Time series with vaccine shown as center. Let's see how "Years since first vaccine implemented" makes things look.
+# note, a nested for loop could have been implemented here which would have indexed through the various diseases. I would have needed to find a way to read the first year the vaccine was used as well, since some of the diseases had two years listed for the vaccine. What I have below requires more lines of code, but is more clear at a glance.
 cent=vac
 for(i in 1:length(vac$cases)) {
   if (vac$disease[i]=="Diphtheria") (cent$year[i]=vac$year[i]-1947) #value just read from vac1 (crude)
