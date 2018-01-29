@@ -323,3 +323,21 @@ citation('GGally')
 #You, Jia. "Here’s the visual proof of why vaccines do more good than harm". www.sciencemag.org. April 27, 2017.
 
 # To answer the title (which was intentionally flippant towards anti-vaxxers), we use vaccines because they work. While this data doesn't show the whole picture, it does show most of it, and we can use this data to create effective graphs which demonstrate the original thesis.
+
+
+
+#Dr. Dushoff's feedback:
+#A nice exploration, with nice explanations.
+#
+#My guess about the difference between size and pch is that size is
+#probably absolute (if size=1.001 is too big, did you try size=1?).
+#
+#You discuss the mumps problem, but not what you did about it. I think
+#that the 0 is untrustworthy and should be replaced by NA.
+#
+#You should be willing to go to great lengths to not repeat code the
+#way you did for the temp=max step: I think you can probably do this
+#easily with mutate() inside of group_by() in this case.
+#
+#Your use of shapes makes things easier to match, but it would have
+#been useful to put the diseases in an order as well, I think.
