@@ -1,30 +1,79 @@
 ---
-title: "Jan29"
+title: "Jan29 Lecture"
 author: "Aleksandar Jovic"
 date: "January 29, 2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+#if notes posted on time just add comments to .Rmd posted
+<https://github.com/bbolker/stat744/blob/master/lectures/diagnostics.rmd>
+
+```{r setup, include=TRUE}
+library(tidyverse)
+theme_set(theme_bw())
+library(car)
+library(broom)
+library(magrittr)
+library(lme4); library(MCMCglmm); library(glmmTMB) ## for models
+library(coda) ## for trace plots
+library(lattice) ## built-in
+library(cowplot)
+library(nullabor)
+```
+Diagnostics: principles
+
+* Don't make decisions on p-values: data collected in the real world is almost certainly not normal, so checking p-value checks if it's normal or not.
+* If you do a diagnostic plot, you know nothing is ever EXACTLY linear or normal or equal variances etc... but are the deviations large enough that they'll change the conclusions in a menaingful way (all of this sounds 'waffly')
+
+Diagnostics after fitting model
+
+* qq plot didnt look great, but it was plotting marginals that were normal (see code in Rmd file from note)
+* code example bleow, missing dd, see rmd
+
+```{r quantile plots}
+m0=lm(y~x,dd)
+augment(m0) %>% select(x,y,.resid) %>%
+  gather(type,value) %>%
+  mutate(type=factor(type,levels=c('x','y','.resid'))) -> a0
+
+ggplot(a0,aes(sample=value))+
+  stat_qq()+
+  facet_wrap(~type)+
+  stat_qq_line(colour='red')
 ```
 
-## R Markdown
+Model diagnosis
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+* mean, variance, distribution (in order of decreasing importance), that is bias, heteroscedasticity, non-normality
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+Bias (using diamonds dataset from ggplot (?))
+
+```{r bias}
+m1=lm(price~carat,diamonds)
+a1=augment(m1,data=diamonds) ## include original data
+ggplot(a1,aes(.fitted,.resid))+
+  geom_point(alpha=0.1)+
+  geom_smooth()
 ```
 
-## Including Plots
+bias 2 : faceting/colouring
 
-You can also embed plots, for example:
+* can change colour of fitted and residual in our model to see where the patterns are coming from
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+Solutions to bias
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+* fitting non-linear pattern (recall Box-Cox transform? probably better to use acepack::avas)
+* however this gives one or two knobs to adjust, while splines can perhaps give a more complex look
+* could also use link functions when needing to develop good models
+
+Heteroscedasticity
+
+* log transformation should be first thing to try and fix (if error variance proportional to mean)
+* confidence intervals will fan as you go away from center, doesnt have anything to do with problem in the model, can standarize these residuals in a way to get rid of that pattern
+* common for LOESS to get dragged down by extreme point
+
+Quantile plots
+* bimodality creates steps
+* qqplot draws line through quartiles, not a regression to not get skewed at tails
+
