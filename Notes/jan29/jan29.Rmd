@@ -76,4 +76,3 @@ Heteroscedasticity
 Quantile plots
 * bimodality creates steps
 * qqplot draws line through quartiles, not a regression to not get skewed at tails
-

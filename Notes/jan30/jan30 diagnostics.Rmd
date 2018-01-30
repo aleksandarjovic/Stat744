@@ -47,8 +47,11 @@ library(coda) ## for trace plots
 library(lattice) ## built-in
 library(cowplot)
 library(nullabor)
+library(ggplot2)
+library(GGally)
+library(glmmTMB)
+library(tidyverse)
 ```
-
 
 ## Diagnostics: goals and ideas
 
@@ -100,9 +103,10 @@ m0 <- lm(y~x,dd)
 augment(m0) %>% select(x,y,.resid) %>%
     gather(type,value) %>%
     mutate(type=factor(type,levels=c("x","y",".resid"))) -> a0
-ggplot(a0,aes(sample=value))+
-    stat_qq()+facet_wrap(~type)+
-    stat_qq_line(colour="red")
+#(ggplot(a0,aes(sample=value))+      #STAT QQ and STAT QQLINE NOT WORKING
+ #   stat_qq()+
+  #  facet_wrap(~type)+
+   # stat_qq_line(colour="red") )
 ```
 
 ## model diagnosis
@@ -273,6 +277,8 @@ get_mid <- function(x) {
 ) -> a3_sum
 ```
 
+* LOESS does a good job with the mean values (what this grouping was trying to accomplish)
+
 ## plot with grouping
 ```{r binary_smooth_plot,message=FALSE}
 gg_bin1+geom_point(data=a3_sum,colour="blue")
@@ -306,10 +312,11 @@ ggplot(a3,aes(age,.resid,colour=urban))+
 ```{r}
 ggplot(a3,aes(age,.resid,colour=urban))+
     geom_point()+
-    geom_smooth(method="gam",formula =y ~ s(x, k=25)) +
+    geom_smooth(method="gam",formula =y ~ s(x, k=25)) + #here choosing max number of knots
     facet_wrap(~livch)
 ```
 
+Otherwise for splines, could use method="lm", formula= y~ns(x,5)
 
 ## 
 
@@ -329,11 +336,16 @@ ggplot(a3,aes(age,.resid,colour=urban))+
 
 ## coverage
 
+Similar to quantile quantile plots. Good way to evaluate a statistical test.
+Simulating p values, in the null case, we ought to get a uniform distribution. 
+
 ![](glycera_pvals.png)
 
 ## likelihood profiles {.smaller}
 
 use $\sqrt{-2 \log (L-L_0)}$ ($\sf V$-shaped), signed square root (straight line/symmetry)
+Recall Wald's Test Statistic.
+Should get a straight line once doign this transformation, if it's straight, it's quadratic. (harder to tell if quadratic by looking at the curved line (top graphs))
 
 ```{r profile_calc,echo=FALSE,cache=TRUE}
 pp <- profile(m3,which=1:2,parallel="multicore",ncpus=2,signames=FALSE)
@@ -383,7 +395,7 @@ owls_nb1 <- glmmTMB(SiblingNegotiation ~ FoodTreatment*SexParent +
 ```{r simfun,cache=TRUE}
 set.seed(101); nsim <- 1e4
 owls_sim <- simulate(owls_nb1,nsim)
-sumfun <- function(x)sum(x==0)
+sumfun <- function(x)sum(x==0) #summary function counts 0s, each column seperate simulation, each row a separate observation
 zero_vals <- apply(owls_sim,2,sumfun)
 dz <- as.data.frame(table(zero_vals)/nsim) %>%
     mutate(zero_vals=as.numeric(zero_vals))
