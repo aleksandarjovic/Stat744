@@ -2,12 +2,13 @@
 
 
 ?	?	perspective plotting	rgl; plotly; lattice; scatterplot3d; Cleveland and McGill (1987)	
-graphics in 3 dimensions, wire plots, perspective plots etc, or beyond (collapsing dimensions, etc)
+graphics in 3 dimensions, wire plots, perspective plots etc
 
-?	?	high-dimensional data	ggobi (articles on GGobi by Cook et al.)	  see above
+?	?	high-dimensional data	ggobi (articles on GGobi by Cook et al.)
+(collapsing dimensions, etc)
 
-?	?	spatial data and mapping	leaflet package; ggmap package; Gelman, Price, and 
-others (1999)	   data that lives naturally in a space (geographic etc)
+?	?	spatial data and mapping	leaflet package; ggmap package; Gelman, Price, and others (1999)
+data that lives naturally in a space (geographic etc)
 
 ?	?	color; color maps and the colorically challenged	colorblindr package; cividis package; Nuñez, Anderton, and Renslow (2017); dichromat package	
 seems simple, but dont just do a few more principles (like the start) interesting ways if youre more mathematically oriented
