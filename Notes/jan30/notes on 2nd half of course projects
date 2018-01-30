@@ -1,0 +1,28 @@
+?	?	dynamic graphics	ggvis; plotly; highcharter; googleVis; D3.js; HTML widget gallery; Hans Rosling’s TED talks on Gapminder; ggvis	
+
+
+?	?	perspective plotting	rgl; plotly; lattice; scatterplot3d; Cleveland and McGill (1987)	
+graphics in 3 dimensions, wire plots, perspective plots etc, or beyond (collapsing dimensions, etc)
+
+?	?	high-dimensional data	ggobi (articles on GGobi by Cook et al.)	  see above
+
+?	?	spatial data and mapping	leaflet package; ggmap package; Gelman, Price, and 
+others (1999)	   data that lives naturally in a space (geographic etc)
+
+?	?	color; color maps and the colorically challenged	colorblindr package; cividis package; Nuñez, Anderton, and Renslow (2017); dichromat package	
+seems simple, but dont just do a few more principles (like the start) interesting ways if youre more mathematically oriented
+
+?	?	aggregation and smoothing for graphical display	Cleveland? more on splines/loess/kernel densities/etc.	
+binomial example
+
+?	?	alternative platforms for data visualization	intro to D3; Vega; Python (matplotlib; seaborn; …)	hadoup?
+good but not only tool (R), and it doesn't scale particularly well. R is good for statistics, but not so much for giant data visualizing (high performance)
+He doesn't actually think that python is particularly better than R, eventhough python is better for large data pipelines.
+d3 and vega are libraries built in javascript, built for highly cutomized displays of data
+
+?	?	compositional data	ternary plots etc. [e.g. ggtern]	
+each group adds up to 1 (proportional data) .. such as soils data
+are there transformations or graphical techniques that work well with this
+
+?	?	network/tree data	igraph/ggdendro packages etc.
+characteristics of nodes within a network. such as phylogenetic trees from biology. simple forms. are there other ways to plot trees with 500 tips such that you can see what is going on. the other is large scale: networks of twitter users, of gene interactions. what does the network look like, how does it flow, how is the information clustered. such as graph theory
