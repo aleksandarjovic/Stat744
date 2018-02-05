@@ -33,8 +33,10 @@ Regression coefficient plot
 * When standardized, it doesn't change the statistical inference, but does change the interpretation. Changing by one standard deviation, we can put it on a physical similar scale
 * This example is not "a good model", but just to illustrate the above points -- we'd want to check interactions, since perhaps smoking has correlations with other variables.
 
+Shape of Response
 
+* it looks like FEV is a linear response in the smoking graph
 
-```{r cars}
-summary(cars)
-```
+Marginal prediction plot
+
+* collapsed the uncertainty, perhaps this is more useful, we made a decision to anchor the slope.
