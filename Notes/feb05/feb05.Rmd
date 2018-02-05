@@ -1,0 +1,40 @@
+---
+title: "Feb5 Lecture"
+author: "Aleksandar Jovic"
+date: "February 5, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+## Feb 5 Lecture
+
+Principles
+
+* tables aren't helpful for viewing patterns (useful for verifying numbers)
+* be careful about units, graphs are more powerful tool for communicating (or miscommunicating)
+
+# for category with 3 levels, 1 input variable, and 2 predictor variables, 2 statistical parameters
+
+* recall smoking data when we saw children who smoke have higher lung capacity than children who don't smoke... except, we didn't see that the ones who smoked were older, hence would naturally have higher lung cap. (confounder/conflation of data)
+* notice the intercept is 'highly significant' , but it is negative. should never be excited that it's hightly significant. the intercept is also fitted at 0, so a female at height 0, age 0 has a -ve lung capacity... meaningless. (more important that it be something sensible)
+* R draws your attention to the p-values, to its detriment (the stars are a global option that can be turned off), should be more interested in the effects
+
+Regression coefficient plot
+
+* We can see confidence intervals, allowing us to see significance and position on a common scale
+* "horrifying" since we put 4 values with different values on the same axis. So it's absolutey unacceptable to think about it since it's different units. Changing units can change how the graph looks.
+* Good way to summarize a variable with only one parameter, can be well summarized in a coefficient plot since we only have this one parameter
+* can make binary continuous with 0,1; can normalize things to make them comparable;
+* When standardized, it doesn't change the statistical inference, but does change the interpretation. Changing by one standard deviation, we can put it on a physical similar scale
+* This example is not "a good model", but just to illustrate the above points -- we'd want to check interactions, since perhaps smoking has correlations with other variables.
+
+
+
+```{r cars}
+summary(cars)
+```
