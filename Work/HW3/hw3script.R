@@ -9,5 +9,5 @@ theme_set(theme_bw()) #override basic ggplot, can edit further later if req'd
 
 
 #~Dataset~#
-datraw=readr::read_csv("https://github.com/bbolker/stat744/blob/master/data/POCIS_Raw_McCallum.csv") #see references for sourced article
-vac=datraw[,2:5]   #filtering out what I don't need
+#datraw=readr::read_csv("https://github.com/bbolker/stat744/blob/master/data/POCIS_Raw_McCallum.csv") #see references for sourced article
+#vac=datraw[,2:5]   #filtering out what I don't need
