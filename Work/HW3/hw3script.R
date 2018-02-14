@@ -11,3 +11,8 @@ theme_set(theme_bw()) #override basic ggplot, can edit further later if req'd
 #~Dataset~#
 temp=read_csv('Data/POCIS_Raw_McCallum.csv')
 x=temp[#,2:5]   #filtering out what I don't need
+  
+
+  
+  
+  #ggsave("Work/HW3/asljflqweqwew.pdf") 
