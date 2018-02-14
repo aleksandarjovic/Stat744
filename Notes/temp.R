@@ -1,5 +1,5 @@
 ## need read_table2() for 'irregular' data
-dd <- read_table2("../data/wei_tab5.5.txt")
+dd <- read_table2("../data/wei_tab5.5.txt") #check to match direct
 head(dd)
 
 dd2 <- (dd
