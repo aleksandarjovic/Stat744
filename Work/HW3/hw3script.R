@@ -24,10 +24,20 @@ x1=read_csv('Data/POCIS_Raw_McCallum.csv') #McCallum et al (2017). Full citation
 #we don't need the ID nor the sampler type (All are polar organic chemical integrative samplers)
 x1=x1[,-c(1,2)]
 x2=read_csv('Data/POCIS_support.csv') #to get some more informative column names
-  #temp[#,2:5]   #filtering out what I don't need
-  
 
-head(x1)
+#Firstly, this graph
+
+x=(x1 %>%
+     group_by(Site) %>%
+     summarize(
+       
+     )
+   )  
+
+g1=(ggplot(data=x1)+
+      geom_boxplot(aes(x=Site,y=CFN))
+)
+print(g1)
 #ggsave("Work/HW3/asljfl.pdf") 
 
 
