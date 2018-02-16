@@ -25,29 +25,33 @@ x1=x1[,-c(1,2)] #we don't need the ID nor the sampler type (All are polar organi
 x2=read_csv('Data/POCIS_support.csv') #to get some more informative column names
 
 
-#
+#I found that the way this dataset is currently set up doesn't really work well with the ggplot
+#I put the drugs in their own column, rather than having 24 columns of different drugs (also, I have the respective drug categories added into the table) 
 
 vert=(
   x1 %>%
     gather(drug,conc,CFN:PPN) %>%
     full_join(x2,by=c("drug"="abbr"))
 )
+
 #some pesky NA rows existing for sites, were these drugs never tested for? They have no concentration measurements.
 vert=vert%>%filter(!is.na(Site))  #this takes care of a lot of problems (removing empty columns, and multiple empty charts)
 
 #This first graph compares all
 g1=(ggplot(data=vert)+
       geom_boxplot(aes(x=Site,y=conc))+
-      facet_wrap(~drug)
+      facet_wrap(~drug)+
+      labs(title="Drug concentrations in each Site")
 )
-print(g1); #ggsave("Work/HW3/asljfl.pdf") 
+print(g1); ggsave("Work/HW3/GeneralComparison.pdf") 
 
 #boxplot not technically appropriate with such low, data points (triplicate), even though it helps visualize the general area
 g1a=(ggplot(data=vert)+
       geom_dotplot(binaxis = "y", stackdir ="center", aes(x=Site,y=conc))+
-      facet_wrap(~drug)
+      facet_wrap(~drug)+
+       labs(title="Drug concentrations in each Site (dotplot)")
 )
-print(g1a); #ggsave("Work/HW3/asljfl.pdf") 
+print(g1a); ggsave("Work/HW3/GeneralComparisonDotplot.pdf") 
 
 #However, with only 3 points, the dots themselves don't really show a good spread when the scales are not appropriate (same with the boxplots)
 #Sucralose (SUC) skews the rest of the data (since we want to keep it on a common y axis if we want to compare magnitudes)
@@ -56,16 +60,18 @@ vert_noSUC=vert %>% filter(drug!='SUC')
 
 g2=(ggplot(data=vert_noSUC)+
       geom_boxplot(aes(x=Site,y=conc))+
-      facet_wrap(~drug)
+      facet_wrap(~drug)+
+      labs(title="Drug concentrations in each Site -- Sucralose omitted")
 )
-print(g2); #ggsave("Work/HW3/asljfl.pdf") 
+print(g2); ggsave("Work/HW3/SUComitted.pdf") 
 
 #boxplot not technically appropriate with such low, data points (triplicate), even though it helps visualize the general area
 g2a=(ggplot(data=vert_noSUC)+
        geom_dotplot(binaxis = "y", stackdir ="center", aes(x=Site,y=conc))+
-       facet_wrap(~drug)
+       facet_wrap(~drug)+
+       labs(title="Drug concentrations in each Site -- Sucralose omitted (dotplot)")
 )
-print(g2a); #ggsave("Work/HW3/asljfl.pdf") 
+print(g2a); ggsave("Work/HW3/SUComitteddotplot.pdf") 
 
 #Question: How do I stop getting "pick better value with binwidth, when I alter bins from 30 I get very, very odd plots#
 
@@ -75,16 +81,18 @@ print(g2a); #ggsave("Work/HW3/asljfl.pdf")
 #For example, here is testosterone on its own:
 tes=vert%>%filter(drug=="TST")
 g3=(ggplot(data=tes)+
-      geom_boxplot(aes(x=Site,y=conc))
+      geom_boxplot(aes(x=Site,y=conc))+
+      labs(title="Testosterone levels in the Water")
 )
 print(g3); #Won't be printing this one since it's a flatline at 0... however, it is interesting to note that the dotplot is quite a bad choices like these as it looks like there are 3 different values, when all are just "0".
 #oops, bad example, didn't realize all values were 0 on the chart, I'll leave this in.
 #let's instead try Naproxen
 npx=vert%>%filter(drug=="NPX")
 g3a=(ggplot(data=npx)+
-      geom_boxplot(aes(x=Site,y=conc))
+      geom_boxplot(aes(x=Site,y=conc))+
+       labs(title="Naproxen levels in the Water")
 )
-print(g3a); #ggsave("Work/HW3/asljfl.pdf")
+print(g3a); ggsave("Work/HW3/Naproxenlevels.pdf")
 #Much more informative. This way, each axis would be scaled respectively. 
 
 #?????????  General Question  ?????????????????????#
@@ -103,18 +111,20 @@ imput$drugcat[which(is.na(imput$drugcat))] <-'antidepressant'   #how would you t
 #now we can see how much each body of water is poluted with each respective drug category
 g4=(ggplot(data=imput)+
       geom_boxplot(aes(x=Site,y=conc))+
-      facet_wrap(~drugcat)
+      facet_wrap(~drugcat)+
+      labs(title="Types of drugs found in Water")
 )
-print(g4); #ggsave("Work/HW3/asljfl.pdf")
+print(g4); ggsave("Work/HW3/drugcategories.pdf")
 
 #similar to sucralose dominating the data when drug was in question, now food is dominating, so let's take it out.
 
 nofood=imput%>%filter(drugcat!='food')
 g4a=(ggplot(data=nofood)+
       geom_boxplot(aes(x=Site,y=conc))+
-      facet_wrap(~drugcat)
+      facet_wrap(~drugcat)+
+       labs(title="Types of drugs found in Water -- Food omitted")
 )
-print(g4a); #ggsave("Work/HW3/asljfl.pdf")
+print(g4a); ggsave("Work/HW3/foodomitted.pdf")
 
 #Once again, we could just do this individually for each graph for the best look if we're more interested in a detailed comparison within specific drug classes instead of a general comparison
 #Quick note, boxplots are better to use here, since when we group by drug category, rather than individual drug, we can combine more measurements for a more appropriate box plot (If we think it's ok to lump all "beta-blocker" (etc) together)
@@ -122,26 +132,30 @@ print(g4a); #ggsave("Work/HW3/asljfl.pdf")
 
 beta=imput%>%filter(drugcat=='beta-blocker')
 g4beta=(ggplot(data=beta)+
-       geom_boxplot(aes(x=Site,y=conc))
+       geom_boxplot(aes(x=Site,y=conc))+
+         labs(title="Beta-blocker levels found in Water")
 )
-print(g4beta); #ggsave("Work/HW3/asljfl.pdf")
+print(g4beta); ggsave("Work/HW3/betablockerlevels.pdf")
 #dotplot comparison
 g4beta1=(ggplot(data=beta)+
-          geom_dotplot(stackdir="center", binaxis = 'y',aes(x=Site,y=conc))
+          geom_dotplot(stackdir="center", binaxis = 'y',aes(x=Site,y=conc))+
+           labs(title="Beta-blocker levels found in Water (dotplot)")
 )
-print(g4beta1); #ggsave("Work/HW3/asljfl.pdf")
+print(g4beta1); ggsave("Work/HW3/betadotplot.pdf")
 #Perhaps a bit better representation, but in my opinion, not as "nice" as a boxplot.
 
 #I know that stacking is generally not preferred, but I'm adding it in here just to show how something could be made to
 bars=(ggplot(imput, aes(x=Site, y=conc, fill=drug))+
-        geom_bar(stat='identity')
+        geom_bar(stat='identity')+
+        labs(title="Stacked Bar graph visualization")
 )
-print(bars);
+print(bars); ggsave("Work/HW3/stacked.pdf")
 #Quite hard to see with so many colours, we could also stagger it:
 dodgebars=(ggplot(imput, aes(x=Site, y=conc, fill=drug))+
-        geom_bar(stat='identity',position=position_dodge())
+        geom_bar(stat='identity',position=position_dodge())+
+          labs(title="Staggered Bar graph visualization")
 )
-print(dodgebars);
+print(dodgebars); ggsave("Work/HW3/staggered.pdf")
 #once again, we see the same issue's as before where Sucralose dominates, again, prompting the idea that perhaps they should just be investigated independently.
 
 
