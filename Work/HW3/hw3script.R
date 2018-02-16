@@ -24,6 +24,7 @@ x1=read_csv('Data/POCIS_Raw_McCallum.csv') #McCallum et al (2017). Full citation
 x1=x1[,-c(1,2)] #we don't need the ID nor the sampler type (All are polar organic chemical integrative samplers)
 x2=read_csv('Data/POCIS_support.csv') #to get some more informative column names
 
+
 #
 
 vert=(
@@ -66,6 +67,8 @@ g2a=(ggplot(data=vert_noSUC)+
 )
 print(g2a); #ggsave("Work/HW3/asljfl.pdf") 
 
+#Question: How do I stop getting "pick better value with binwidth, when I alter bins from 30 I get very, very odd plots#
+
 #Note, this is a temporary remedy. Ideally, I could just show 24 different graphs, one for each drug. This way, there could be an adequate comparison for each specific drug.
 #I originally just had them faceted in case someone is interested in comparisons... however, since in biology, different drugs have different effects at various concentrations... i.e. High levels of sucralose, and high levels of testosterone need to be kept in context (each one have "high" defined differently).
 
@@ -74,7 +77,7 @@ tes=vert%>%filter(drug=="TST")
 g3=(ggplot(data=tes)+
       geom_boxplot(aes(x=Site,y=conc))
 )
-print(g3); #ggsave("Work/HW3/asljfl.pdf") #Won't be printing this one since it's a flatline at 0... however, it is interesting to note that the dotplot is quite a bad choice for this one as it looks like there are 3 different values.
+print(g3); #Won't be printing this one since it's a flatline at 0... however, it is interesting to note that the dotplot is quite a bad choices like these as it looks like there are 3 different values, when all are just "0".
 #oops, bad example, didn't realize all values were 0 on the chart, I'll leave this in.
 #let's instead try Naproxen
 npx=vert%>%filter(drug=="NPX")
@@ -128,6 +131,18 @@ g4beta1=(ggplot(data=beta)+
 )
 print(g4beta1); #ggsave("Work/HW3/asljfl.pdf")
 #Perhaps a bit better representation, but in my opinion, not as "nice" as a boxplot.
+
+#I know that stacking is generally not preferred, but I'm adding it in here just to show how something could be made to
+bars=(ggplot(imput, aes(x=Site, y=conc, fill=drug))+
+        geom_bar(stat='identity')
+)
+print(bars);
+#Quite hard to see with so many colours, we could also stagger it:
+dodgebars=(ggplot(imput, aes(x=Site, y=conc, fill=drug))+
+        geom_bar(stat='identity',position=position_dodge())
+)
+print(dodgebars);
+#once again, we see the same issue's as before where Sucralose dominates, again, prompting the idea that perhaps they should just be investigated independently.
 
 
 #~Citations~#
