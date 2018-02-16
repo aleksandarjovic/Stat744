@@ -1,4 +1,5 @@
 ### Homework 4 (3*): Finding a way to make a chart into a useful graph.  Aleksandar Jovic. Feb 15, 2018 ###
+#One note, the graphs are best viewed on full screen, as the pdf they're currently uploaded as shows a bit of overlap/compression in the graphs.
 
 
 #~Preamble~#    (taken complete from note)
