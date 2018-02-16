@@ -37,6 +37,20 @@ vert=(
 #some pesky NA rows existing for sites, were these drugs never tested for? They have no concentration measurements.
 vert=vert%>%filter(!is.na(Site))  #this takes care of a lot of problems (removing empty columns, and multiple empty charts)
 
+
+#~General Discussion and Goal~#
+#Looking at this dataset, it is clear the authors are trying to examine/compare various contamination levels of water.
+#Naturally, starting the y-scale at 0 makes sense, so bar graphs could work, however, when each site has measurements taken in triplicate, I opted for boxplots/dotplots.
+#While this seems relatively simple (no colours/shapes), the chart is itself not complicated, just large. This clean method clearly displays the levels of each drug on a common scale, comparing each of the 4 sites closely together.
+#With such a low number of observations, boxplot isn't the best idea as showing quartiles is awkward. However, the spread is more for the visual effect.
+#Dotplots have their own issues, especially when being viewed in comparison to other drugs (one drug will stretch the scale too far, so all the dots fall on the same spot, losing that information).
+#Ideally, each drug would want its own plot, but that would get tedious, and really add nothing to do 24 graphs, so I only did one to show how it looks.
+#After, I tried showing the drug categories, rather than the individual drugs as a point of interest. 
+#Again, I showed (on a common scale) each drug category with the sites being the primary focus in each facet.
+#The final stacked bar graph was more of a curiosity, and not my "preferred" graph. With 24 drugs, this came out quite hard to see (24 hues are very hard to distinguish).
+
+
+#~Plots~#
 #This first graph compares all drugs with respect to their location (3 locations and control)
 g1=(ggplot(data=vert)+
       geom_boxplot(aes(x=Site,y=conc))+
@@ -145,12 +159,13 @@ print(g4beta1); #ggsave("Work/HW3/betadotplot.pdf")
 #Perhaps a bit better representation, but in my opinion, not as "nice" as a boxplot.
 
 #I know that stacking is generally not preferred, but I'm adding it in here just to show how something could be made to
+#Also note, these plots ADD the triplicates, rather than average them. This is fine, because each one has the same amount of observations, so when they all take the same colour, they are in essence averaged, and proportionally compared to their counterparts
 bars=(ggplot(imput, aes(x=Site, y=conc, fill=drug))+
         geom_bar(stat='identity')+
         labs(title="Stacked Bar graph visualization")
 )
 print(bars); #ggsave("Work/HW3/stacked.pdf")
-#Quite hard to see with so many colours, we could also stagger it:
+#Quite hard to see with so many colours (24 hues is a nightmare admittedly -- I tried just alternating colours, but this might be confusing for some who would have to assume that the order of colours was indeed the order seen in the legend), we could also stagger it:
 dodgebars=(ggplot(imput, aes(x=Site, y=conc, fill=drug))+
         geom_bar(stat='identity',position=position_dodge())+
           labs(title="Staggered Bar graph visualization")
