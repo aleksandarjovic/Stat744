@@ -25,6 +25,8 @@ x1=read_csv('Data/POCIS_Raw_McCallum.csv') #McCallum et al (2017). Full citation
 x1=x1[,-c(1,2)] #we don't need the ID nor the sampler type (All are polar organic chemical integrative samplers)
 x2=read_csv('Data/POCIS_support.csv') #to get some more informative column names
 
+## BMB: usually best to drop columns by name (select()) rather than position
+##  - more robust to changes
 
 #I found that the way this dataset is currently set up doesn't really work well with the ggplot
 #I put the drugs in their own column, rather than having 24 columns of different drugs (also, I have the respective drug categories added into the table) 
@@ -38,6 +40,7 @@ vert=(
 #some pesky NA rows existing for sites, were these drugs never tested for? They have no concentration measurements.
 vert=vert%>%filter(!is.na(Site))  #this takes care of a lot of problems (removing empty columns, and multiple empty charts)
 
+## BMB: if you're comfortable with it, you can use longer sequences of pipes
 
 #~General Discussion and Goal~#
 #Looking at this dataset, it is clear the authors are trying to examine/compare various contamination levels of water.
@@ -58,7 +61,14 @@ g1=(ggplot(data=vert)+
       facet_wrap(~drug)+
       labs(title="Drug concentrations in each Site")
 )
-print(g1); #ggsave("Work/HW3/GeneralComparison.pdf") 
+
+print(g1) #ggsave("Work/HW3/GeneralComparison.pdf") 
+## BMB: widely varying scales makes this less useful ...
+##      why alphabetical? (why not order in some more useful way?
+##      why spaces between panels?
+##      what to do about overlapping x-axis labels?
+##      use longer drug names rather than abbreviations?
+##      give units of concentration? divide by 1000 for cleaner y-axis labels?
 
 #boxplot not technically appropriate with such low, data points (triplicate), even though it helps visualize the general area
 g1a=(ggplot(data=vert)+
@@ -70,6 +80,7 @@ print(g1a); #ggsave("Work/HW3/GeneralComparisonDotplot.pdf")
 
 #However, with only 3 points, the dots themselves don't really show a good spread when the scales are not appropriate (same with the boxplots)
 #Sucralose (SUC) skews the rest of the data (since we want to keep it on a common y axis if we want to compare magnitudes)
+## BMB yup.
 
 vert_noSUC=vert %>% filter(drug!='SUC')
 
@@ -82,13 +93,15 @@ print(g2); #ggsave("Work/HW3/SUComitted.pdf")
 
 #boxplot not technically appropriate with such low, data points (triplicate), even though it helps visualize the general area
 g2a=(ggplot(data=vert_noSUC)+
-       geom_dotplot(binaxis = "y", stackdir ="center", aes(x=Site,y=conc))+
+       geom_dotplot(binaxis = "y", stackdir ="center", aes(x=Site,y=conc),
+                    binwidth=50)+
        facet_wrap(~drug)+
        labs(title="Drug concentrations in each Site -- Sucralose omitted (dotplot)")
 )
 print(g2a); #ggsave("Work/HW3/SUComitteddotplot.pdf") 
 
 #Question: How do I stop getting "pick better value with binwidth, when I alter bins from 30 I get very, very odd plots#
+## default binwidth is data range/30, so I specified that manually (see above)
 
 #Note, this is a temporary remedy. Ideally, I could just show 24 different graphs, one for each drug. This way, there could be an adequate comparison for each specific drug.
 #I originally just had them faceted in case someone is interested in comparisons... however, since in biology, different drugs have different effects at various concentrations... i.e. High levels of sucralose, and high levels of testosterone need to be kept in context (each one have "high" defined differently).
@@ -116,16 +129,29 @@ print(g3a); #ggsave("Work/HW3/Naproxenlevels.pdf")
 #Languages like python seem better at distinguishing between different strings of text, using an algorithm where I store the string of characters to a temp slot, then if the next row is the same class, to incorporate that value:
 #When a new class is reached, the stored data would then be used to standardize the data into a new column, and the class would be changed to the new string. This would then repeat until the end of the dataset.
 #Unless I'm mistaken, this is one of R's limitations as a language.
-###################################################
 
+## BMB: you could certainly implement it the way you suggest above, just as well in R as
+##  in Python, but you're right that sequential operations are less efficiently (relatively)
+##  in R than in Python (however, pandas and numpy have super-fast vectorized operators)
+## however
+vert <- vert %>% group_by(drug) %>%
+    mutate(conc_sc = drop(scale(conc)))
+## this centers by the mean and scales by the sd. (drop() is necessary because
+## scale returns a matrix, not a vector). You can scale/center by other values, or
+## do it by hand (conc_sc = (conc-mean(conc))/sd(conc))
+
+###################################################
 
 #dmSRT and dmVLF are variations of their respective parents, and are also anti-depressants, as such, I'll impute that data into the tibble.
 imput=vert
 imput$drugcat[which(is.na(imput$drugcat))] <-'antidepressant'   #how would you tidyverse this nicely... the traditional method beckoned and I couldn't resist its call.
 
-#now we can see how much each body of water is poluted with each respective drug category
+imput <- vert %>% tidyr::replace_na(list(drugcat='antidepressant'))
+
+#now we can see how much each body of water is polluted with each respective drug category
+## BMB: not sure why I had to add "group=Site" ...
 g4=(ggplot(data=imput)+
-      geom_boxplot(aes(x=Site,y=conc))+
+      geom_boxplot(aes(x=Site,y=conc,group=Site))+
       facet_wrap(~drugcat)+
       labs(title="Types of drugs found in Water")
 )
@@ -135,7 +161,7 @@ print(g4); #ggsave("Work/HW3/drugcategories.pdf")
 
 nofood=imput%>%filter(drugcat!='food')
 g4a=(ggplot(data=nofood)+
-      geom_boxplot(aes(x=Site,y=conc))+
+      geom_boxplot(aes(x=Site,y=conc,group=Site))+
       facet_wrap(~drugcat)+
        labs(title="Types of drugs found in Water -- Food omitted")
 )
@@ -147,17 +173,18 @@ print(g4a); #ggsave("Work/HW3/foodomitted.pdf")
 
 beta=imput%>%filter(drugcat=='beta-blocker')
 g4beta=(ggplot(data=beta)+
-       geom_boxplot(aes(x=Site,y=conc))+
+       geom_boxplot(aes(x=Site,y=conc,group=Site))+
          labs(title="Beta-blocker levels found in Water")
 )
 print(g4beta); #ggsave("Work/HW3/betablockerlevels.pdf")
 #dotplot comparison
 g4beta1=(ggplot(data=beta)+
-          geom_dotplot(stackdir="center", binaxis = 'y',aes(x=Site,y=conc))+
+          geom_dotplot(stackdir="center", binaxis = 'y',aes(x=Site,y=conc,group=Site))+
            labs(title="Beta-blocker levels found in Water (dotplot)")
 )
 print(g4beta1); #ggsave("Work/HW3/betadotplot.pdf")
 #Perhaps a bit better representation, but in my opinion, not as "nice" as a boxplot.
+##  BMB: it's common to use both at once ...
 
 #I know that stacking is generally not preferred, but I'm adding it in here just to show how something could be made to
 #Also note, these plots ADD the triplicates, rather than average them. This is fine, because each one has the same amount of observations, so when they all take the same colour, they are in essence averaged, and proportionally compared to their counterparts
@@ -172,7 +199,7 @@ dodgebars=(ggplot(imput, aes(x=Site, y=conc, fill=drug))+
           labs(title="Staggered Bar graph visualization")
 )
 print(dodgebars); #ggsave("Work/HW3/staggered.pdf")
-#once again, we see the same issue's as before where Sucralose dominates, again, prompting the idea that perhaps they should just be investigated independently.
+#once again, we see the same issues as before where Sucralose dominates, again, prompting the idea that perhaps they should just be investigated independently.
 
 
 #~Citations~#
@@ -180,3 +207,5 @@ citation()
 citation('tidyverse')
 citation('ggplot2')
 #McCallum, Erin S., Sherry N. N. Du, Maryam Vaseghi-Shanjani, Jasmine A. Choi, Theresa R. Warriner, Tamanna Sultana, Graham R. Scott, and Sigal Balshine. 2017. “In Situ Exposure to Wastewater Effluent Reduces Survival but Has Little Effect on the Behaviour or Physiology of an Invasive Great Lakes Fish.” Aquatic Toxicology 184 (March): 37–48. doi:10.1016/j.aquatox.2016.12.017
+
+## BMB: good job overall
