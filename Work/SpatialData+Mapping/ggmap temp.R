@@ -125,3 +125,4 @@ houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
 #"open data hamilton" film permits by ward
 
 # put presentation together: overview of when to use, principles
+# happy git with R, git config credential helper
