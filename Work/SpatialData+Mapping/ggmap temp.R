@@ -1,1 +1,117 @@
 ##ggmap temp
+library(ggmap); citation('ggmap') #david kahle & hadley wickham
+library(ggplot2)
+library(tidyverse)
+library(forcats)
+library(labeling) #needs to be installed for ggmap to work
+
+#ggmap easily gets raster map tiles from Google Maps, OpenStreetMap, Stamen Maps (raster data: simplest form, a raster consists of a matrix of cells (or pixels) organized into rows and columns (or a grid) where each cell contains a value representing information, such as temperature. Rasters are digital aerial photographs, imagery from satellites, digital pictures, or even scanned map), then plots using the ggplot2 framework
+#It includes tools common to those tasks, including functions for geolocation and routing.
+
+
+#==============MAP RETRIEVAL=============#
+
+#retrieving stamenmap
+mapzone = c(left = -125, bottom = 25.75, right = -67, top = 49) #you specify the box
+map = get_stamenmap(mapzone, zoom = 5, maptype = "toner-lite") #maptype, see different ones
+#careful, large ggmaps can grow massively in size (150MB)
+ggmap(map)
+#stamen maptype is different from google (list?)
+
+#retrieving googlemap, here we only need to center it
+map1 = get_googlemap(center=c(lon=-79.91, lat=43.26),zoom=13, size=c(640,640),scale=2,maptype='terrain') #'satellite','roadmap'
+ggmap(map1) #hamilton for example, lon,lat very sensitive, so need to convert hours/minutes into a decimal, zoom must be whole number, so a bit finnicky
+
+#mcmaster satellite map
+mcmastermap = get_googlemap(center=c(lon=-79.9192, lat=43.2609), zoom=15, maptype = 'satellite'); ggmap(mcmastermap)
+fireball = get_googlemap(center=c(lon=-79.92, lat=43.2609), zoom=19, maptype = 'satellite'); ggmap(fireball)
+
+#can also just type city (for american cities:
+ggmap(get_googlemap("london england", zoom = 12))
+ggmap(get_googlemap("lasangeles california", zoom = 12, maptype = "satellite"))
+#with piping
+get_googlemap("newyork newyork", zoom = 12) %>% ggmap() #gives me las vegas?
+get_googlemap('toronto canada', zoom=12,maptype='satellite') %>% ggmap() #certain zoomes won't 12 does, 13 doesnt 14 doesnt, 15 does
+get_googlemap('toronto canada', zoom=15, maptype='hybrid') %>% ggmap() #hybrid gives names of landmarks/streets with the satellite
+
+#ggmap(map,extent='device') #extent......
+
+#``````````````````````````````````````````````````````````````````````````````
+
+#==========qmplot===========#
+#qmplot ggmaps version of ggplot's qplot; that is "quick and easy" way to get graphs built
+
+#define helper function within tidy (dplyr)
+`%notin%` = function(setA, setB) !(setA %in% setB) #credit to kahle, checks that setA is not in setB
+
+#crime data found in ggplot for practice: houston jan2010 to aug2010
+#identify important variables so ppl know what they 'll need to do this with other data
+
+# reduce crime to violent crimes in downtown houston
+violent_crimes = crime %>% 
+  filter(
+    offense %notin% c("auto theft", "theft", "burglary"),
+    -95.39681 <= lon & lon <= -95.34188,
+    29.73631 <= lat & lat <=  29.78400
+  ) %>% 
+  mutate(
+    offense = fct_drop(offense), #drops unused levels, does not drop NA levels that have values
+    offense = fct_relevel(offense,  #reorders factor levels by hand
+                          c("robbery", "aggravated assault", "rape", "murder")
+    )
+  )
+
+# use qmplot to make a scatterplot on a map
+qmplot(lon, lat, data = violent_crimes, maptype = "toner-lite", colour = I("red"),size = I(0.9),alpha=.3)
+
+#ggplots geoms are all available
+#contour example
+qmplot(x=lon, y=lat, data = violent_crimes, maptype = "toner-2011", geom = "density2d", colour = I("red"),size=I(1))
+
+#however we can use all the usual ggplot2 stuff (specifying geoms, polishing)
+
+robberies = violent_crimes %>% filter(offense=='robbery')
+
+qmplot(lon, lat, data = violent_crimes, geom = "blank", 
+       zoom = 15, maptype = "toner-background", darken = .75, legend = "bottomright"
+) +
+  stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = .35, color = NA) +
+  scale_fill_gradient2("Robbery\nHeatmap", low = "white", mid = "yellow", high = "red", midpoint = 650)
+
+#faceting by crime
+(
+qmplot(lon, lat, data = violent_crimes, maptype = "toner-background", color = offense) + 
+  facet_wrap(~ offense)
+)
+
+#changing image of crimes
+theme_set(theme_bw())
+houmap = qmap("houston",zoom=13, colour='bw', legend ='topleft')
+
+(houmap+
+    geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense,size=offense))
+)
+
+(
+houmap+
+    stat_bin2d(
+      data=violent_crimes,
+      aes(x=lon,y=lat,colour=offense,fill=offense),
+      size=0.6, bins= 90, alpha=.4
+    )
+)
+#compare to closer, we can use less bins
+houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
+
+(houmap+
+    geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense,size=offense))
+)
+
+(
+  houmap+
+    stat_bin2d(
+      data=violent_crimes,
+      aes(x=lon,y=lat,colour=offense,fill=offense),
+      size=0.6, bins= 30, alpha=.4
+    )
+)
