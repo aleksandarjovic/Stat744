@@ -38,7 +38,7 @@ get_googlemap('toronto canada', zoom=15, maptype='hybrid') %>% ggmap() #hybrid g
 
 #``````````````````````````````````````````````````````````````````````````````
 
-#==========qmplot===========#
+#==========qmplot===========#   # "qmplot is that the best way vs not, is it quick and dirty"
 #qmplot ggmaps version of ggplot's qplot; that is "quick and easy" way to get graphs built
 
 #define helper function within tidy (dplyr)
@@ -73,10 +73,11 @@ qmplot(x=lon, y=lat, data = violent_crimes, maptype = "toner-2011", geom = "dens
 robberies = violent_crimes %>% filter(offense=='robbery')
 
 qmplot(lon, lat, data = violent_crimes, geom = "blank", 
-       zoom = 15, maptype = "toner-background", darken = .75, legend = "bottomright"
+       zoom = 15, maptype = "toner-background", legend = "bottomright"
 ) +
   stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = .35, color = NA) +
   scale_fill_gradient2("Robbery\nHeatmap", low = "white", mid = "yellow", high = "red", midpoint = 650)
+# add points to the heatmap
 
 #faceting by crime
 (
@@ -115,3 +116,13 @@ houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
       size=0.6, bins= 30, alpha=.4
     )
 )
+
+#weather dataset, polution?
+#freedom of information act, new york dog licenses data ??
+#google
+#toronto data maybe, find some exercise.
+#fill permits hamilton
+#"open data hamilton" film permits by ward
+
+# put presentation together: overview of when to use, principles
+# happy git with R, git config credential helper
