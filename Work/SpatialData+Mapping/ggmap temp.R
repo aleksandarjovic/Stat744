@@ -119,7 +119,7 @@ houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
 
 #weather dataset, polution?
 #freedom of information act, new york dog licenses data ??
-#google
+#googles
 #toronto data maybe, find some exercise.
 #fill permits hamilton
 #"open data hamilton" film permits by ward
