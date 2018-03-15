@@ -9,18 +9,41 @@ output: ioslides_presentation
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+## Intro Slide talking about overview of spatial data
+
+- what is
+- why/when use
+- advantages/disadvantages
+
+## Leaflet section
+
+Stuff
 
 
+# GGmap section
+
+Can put words here on the tile too
+
+#Overview
+
+##
+
+test, no title
+
+## Packages
+
+- library(ggplot2)
+- library(tidyverse)
+- library(forcats)
+- library(labeling)
+- library(ggmap)
+- citation('ggmap') #david kahle & hadley wickham
 
 
+<!-- #If anything is similar/crossover can rearrange pres so our individual sections can intertwine rather than 'part 1, part 2' (if relevant)
 
+<!--(leaving this below for reference when making slides)
 
-
-
-
-
-
-###################Leaving this below for reference when making slides###############
 ## R Markdown
 
 This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
@@ -45,3 +68,4 @@ summary(cars)
 plot(pressure)
 ```
 
+-->
