@@ -38,10 +38,27 @@ get_googlemap('toronto canada', zoom=15, maptype='hybrid') %>% ggmap() #hybrid g
 
 #``````````````````````````````````````````````````````````````````````````````
 
+
+
 #==========qmplot===========#   # "qmplot is that the best way vs not, is it quick and dirty"
 #qmplot ggmaps version of ggplot's qplot; that is "quick and easy" way to get graphs built
+#Use qmplot() the same way you’d use qplot(), but with a map automatically added in the background.
 
-#define helper function within tidy (dplyr)
+#i.e. qmap is a "wrapper" for ggmap and get_map: qmap(location = "houston", ...)
+#example below of qplot vs ggplot (user kohske on stackoverflow)
+#qplot(x,y, geom="line") # I will use this
+#ggplot(data.frame(x,y), aes(x,y)) + geom_line() # verbose
+#
+#d <- data.frame(x, y)
+#
+#qplot(x, y, data=d, geom="line") 
+#ggplot(d, aes(x,y)) + geom_line() # I will use this
+
+
+
+#suppose we are interested in specific crimes, we can isolate certain types from our dataset#
+
+#define helper function within tidy (dplyr) #this is similr to defining custom class methods... in essence making special pipes
 `%notin%` = function(setA, setB) !(setA %in% setB) #credit to kahle, checks that setA is not in setB
 
 #crime data found in ggplot for practice: houston jan2010 to aug2010
@@ -60,6 +77,41 @@ violent_crimes = crime %>%
                           c("robbery", "aggravated assault", "rape", "murder")
     )
   )
+## If that is too advanced, here is a more straightforward/traditional way to code it:
+#
+# qmplot(lon, lat, data = crime)
+# 
+# 
+# # only violent crimes
+# violent_crimes <- subset(crime,
+#   offense != "auto theft" &
+#   offense != "theft" &
+#   offense != "burglary"
+# )
+# 
+# # rank violent crimes
+# violent_crimes$offense <- factor(
+#   violent_crimes$offense,
+#   levels = c("robbery", "aggravated assault", "rape", "murder")
+# )
+# 
+# # restrict to downtown
+# violent_crimes <- subset(violent_crimes,
+#   -95.39681 <= lon & lon <= -95.34188 &
+#    29.73631 <= lat & lat <=  29.78400
+# )
+# 
+# theme_set(theme_bw())
+# 
+# qmplot(lon, lat, data = violent_crimes, colour = offense,
+#   size = I(3.5), alpha = I(.6), legend = "topleft")
+# 
+# qmplot(lon, lat, data = violent_crimes, geom = c("point","density2d"))
+# qmplot(lon, lat, data = violent_crimes) + facet_wrap(~ offense)
+# qmplot(lon, lat, data = violent_crimes, extent = "panel") + facet_wrap(~ offense)
+# qmplot(lon, lat, data = violent_crimes, extent = "panel", colour = offense, darken = .4) +
+#   facet_wrap(~ month)
+
 
 # use qmplot to make a scatterplot on a map
 qmplot(lon, lat, data = violent_crimes, maptype = "toner-lite", colour = I("red"),size = I(0.9),alpha=.3)
@@ -84,6 +136,20 @@ qmplot(lon, lat, data = violent_crimes, geom = "blank",
 qmplot(lon, lat, data = violent_crimes, maptype = "toner-background", color = offense) + 
   facet_wrap(~ offense)
 )
+
+#faceting by day
+
+houston = get_googlemap('houston texas', zoom=15, maptype='roadmap')
+ggmap(houston)
+
+HoustonMap <- ggmap(houston, base_layer = ggplot(aes(x = lon, y = lat),
+                                                 data = violent_crimes))
+HoustonMap +
+  stat_density2d(aes(x = lon, y = lat, fill = ..level.., alpha = ..level..),
+                 bins = 5, geom = "polygon",
+                 data = violent_crimes) +
+  scale_fill_gradient(low = "black", high = "red") +
+  facet_wrap(~ day)
 
 #changing image of crimes
 theme_set(theme_bw())
