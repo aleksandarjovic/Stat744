@@ -68,6 +68,10 @@ library(labeling)
 library(ggmap)
 ```
 
+#ggmap
+
+
+
 #Leaflet
 
 [Leaflet for R](https://rstudio.github.io/leaflet/) is where I learned how to use Leaflet. It is a great resource, so refer to it if you need more clarification.
