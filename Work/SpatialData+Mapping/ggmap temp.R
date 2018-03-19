@@ -155,6 +155,8 @@ HoustonMap +
 theme_set(theme_bw())
 houmap = qmap("houston",zoom=13, colour='bw', legend ='topleft')
 
+#QUERY LIMIT ISSUES... ??????
+
 (houmap+
     geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense,size=offense))
 )
@@ -185,7 +187,7 @@ houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
 
 #weather dataset, polution?
 #freedom of information act, new york dog licenses data ??
-#googles
+
 #toronto data maybe, find some exercise.
 #fill permits hamilton
 #"open data hamilton" film permits by ward
