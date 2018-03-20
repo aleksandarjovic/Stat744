@@ -1,0 +1,248 @@
+---
+title: "Spatial Data"
+author: "The Alex(k)'s"
+date: "3/14/2018"
+output: html_document
+---
+
+```{r, echo=FALSE}
+library(shiny)
+```
+
+#Packages Required
+
+```{r, message=FALSE}
+library(leaflet)
+library(knitr)
+library(rgdal) #issues on windows, created for OSX
+```
+
+[Leaflet for R](https://rstudio.github.io/leaflet/) is where I learned how to use Leaflet. It is a great resource, so refer to it if you need more clarification. In addition [Cran: Leaflet](https://cran.r-project.org/web/packages/leaflet/leaflet.pdf) is, as usual, a great resource.
+
+`addTiles()` gives the default base map in leaflet^4^
+
+```{r}
+m <- leaflet() %>% 
+  addTiles()
+m
+```
+
+##Base Maps
+
+`addProviderTiles()` gives you a tile layer from a known map provider^4^
+
+```{r}
+m %>% addProviderTiles(providers$Stamen.Toner) 
+```
+
+```{r}
+m %>% addProviderTiles(providers$CartoDB.Positron)
+```
+
+```{r}
+m %>% addProviderTiles(providers$Esri.NatGeoWorldMap)
+```
+
+
+```{r, message=FALSE, echo=FALSE}
+#install.packages("kableExtra")
+#devtools::install_github("haozhu233/kableExtra")
+
+library(kableExtra)
+library(knitr)
+
+text_tbl <- data.frame(
+  BaseMap = c("Default", "Stamen.Tower", "CartoDB.Positron", "Esri.NatGeoWorldMap"),
+  Pros = c("Zoomed out - colours are fairly simple", "None?", "Great for added colour as the background colour is mutual", "Shows different landscapes of Earth, i.e. deepness of water & dry/wet regions"),
+  Cons = c("Zoom in - gives extra colour", "Any colour added to plot will likely be hard to see", "None?", "Specific uses only")
+)
+
+kable(text_tbl, "html") %>%
+  kable_styling(full_width = T) 
+```
+
+
+###Example: Base Map versus CartoDB.Positron Map (Weather Systems)
+
+`addWMSTiles` is for adding Web Map Service tiles^4^
+
+```{r}
+leaflet() %>% addTiles() %>%
+  addWMSTiles(
+    "http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi",
+    layers = "nexrad-n0r-900913",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE),
+    attribution = "Weather data © 2012 IEM Nexrad"
+  )
+```
+
+```{r}
+leaflet() %>% addProviderTiles(providers$CartoDB.Positron) %>%
+  addWMSTiles(
+    "http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi",
+    layers = "nexrad-n0r-900913",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE),
+    attribution = "Weather data © 2012 IEM Nexrad"
+  )
+```
+
+##Circle Markers
+
+```{r}
+data(quakes)
+
+leaflet(data = quakes) %>%  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(~long, ~lat, radius = ~sqrt(exp(mag))/2, label = ~as.character(mag), color = "black", fillColor = "red", fillOpacity = 0.1, stroke = FALSE, opacity = 0)
+
+leaflet(data = quakes) %>%  addProviderTiles(providers$CartoDB.Positron) %>%
+  addCircleMarkers(~long, ~lat, radius = ~sqrt(exp(mag))/2, label = ~as.character(mag), color = "black", fillColor = "red", fillOpacity = 0.6, stroke = FALSE, opacity = 0)
+```
+
+**Comments about the plot above:**
+
+* when you zoom in, there is more detail shown
+* option to make the fillOpacity small so the patterns can be more distinguishable
+* problem: can't distinguish between different magnitudes (which are represented in the size)
+* question: how should I scale the magnitude (as magnitude is in a log scale) and what colour should I represent to show earthquakes?
+* next step: find a way to represent plate boundaries to create another layer over this map.
+
+##Read OGR (OpenGIS Simple Features Reference Implementation)
+
+```{r}
+library(rgdal)
+states <- readOGR("shapefiles/cb_2016_us_state_20m.shp",
+ layer = "cb_2016_us_state_20m", GDAL1_integer64_policy = TRUE)
+
+leaflet(states) %>%
+    addPolygons(color = "#444444", weight = 2, smoothFactor = 0.5,
+                opacity = 0.1, fillOpacity = 0.8,
+                fillColor = ~colorQuantile("YlOrRd", ALAND)(ALAND),
+                highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                    bringToFront = TRUE))
+
+leaflet(states) %>% addProviderTiles(providers$CartoDB.Positron) %>%
+    addPolygons(color = "#444444", weight = 2, smoothFactor = 0.5,
+                opacity = 0.1, fillOpacity = 0.8,
+                fillColor = ~colorQuantile("YlOrRd", ALAND)(ALAND),
+                highlightOptions = highlightOptions(color = "white", weight = 2,
+                                                    bringToFront = TRUE))
+```
+
+**Comment about the plot above:**
+
+* question: when should one include `\addProviderTiles()` or `\addTiles()`? 
+
+##Chloropleth Maps
+
+```{r}
+tmp <- tempdir()
+url <- "http://personal.tcu.edu/kylewalker/data/mexico.zip"
+file <- basename(url)
+download.file(url, file)
+unzip(file, exdir = tmp)
+mexico <- readOGR(dsn = tmp, layer = "mexico", encoding = "UTF-8")
+pal <- colorBin("Reds", mexico$gdp08, 6, pretty = FALSE) ##6 is the number of bins
+state_popup <- paste0("<strong>Estado: </strong>", 
+                      mexico$name, 
+                      "<br><strong>PIB per c?pita, miles de pesos, 2008: </strong>", 
+                      mexico$gdp08)
+leaflet(data = mexico) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(gdp08), 
+              fillOpacity = 0.8, 
+              color = "grey", 
+              weight = 2, 
+              dashArray = "3", 
+              highlight = highlightOptions(weight = 5, 
+                                            
+                                           bringToFront = TRUE),
+              label = ~as.character(mexico$state))
+```
+**Comments on the plot above**
+
+* The bin size needs to be organized better
+
+* It would be good to add the value of the density to the label
+
+* Colour is important here - started with blue and it wasn't very helpful as blue can be mixed with the grey in the background
+
+* Legend would be very useful and positioning of legend is important
+
+```{r}
+tmp <- tempdir()
+url <- "http://personal.tcu.edu/kylewalker/data/mexico.zip"
+file <- basename(url)
+download.file(url, file)
+unzip(file, exdir = tmp)
+mexico <- readOGR(dsn = tmp, layer = "mexico", encoding = "UTF-8")
+bin<-c(0,40,60, 80, 100, Inf)
+pal <- colorBin("Reds", mexico$gdp08, bin, pretty = FALSE) ##6 is the number of bins
+state_popup <- paste0("<strong>Estado: </strong>", 
+                      mexico$name, 
+                      "<br><strong>PIB per c?pita, miles de pesos, 2008: </strong>", 
+                      mexico$gdp08)
+leaflet(data = mexico) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(gdp08), 
+              fillOpacity = 0.8, 
+              color = "grey", 
+              weight = 2, 
+              dashArray = "3", 
+              highlight = highlightOptions(weight = 5, 
+                                            
+                                           bringToFront = TRUE),
+              label = ~as.character(mexico$state)) %>% addLegend(pal = pal, values = ~gdp08, opacity = 0.7, title = "GDP",
+  position = "topright")
+```
+
+**Next steps: Continuous colour**
+
+```{r}
+tmp <- tempdir()
+url <- "http://personal.tcu.edu/kylewalker/data/mexico.zip"
+file <- basename(url)
+download.file(url, file)
+unzip(file, exdir = tmp)
+mexico <- readOGR(dsn = tmp, layer = "mexico", encoding = "UTF-8")
+pal <- colorNumeric("Reds", mexico$gdp08) ##6 is the number of bins
+state_popup <- paste0("<strong>Estado: </strong>", 
+                      mexico$name, 
+                      "<br><strong>PIB per c?pita, miles de pesos, 2008: </strong>", 
+                      mexico$gdp08)
+leaflet(data = mexico) %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(fillColor = ~pal(gdp08), 
+              fillOpacity = 0.8, 
+              color = "grey", 
+              weight = 2, 
+              dashArray = "3", 
+              highlight = highlightOptions(weight = 5, 
+                                            
+                                           bringToFront = TRUE),
+              label = ~as.character(mexico$state)) %>% addLegend(pal = pal, values = ~gdp08, opacity = 0.7, title = "GDP",
+  position = "topright")
+```
+**We have the same problem as before with the first discrete colour plot**
+
+##References
+
+[1] Kraak, M.J., "Visualising spatial distributions." In P.A. Longley, &. [et al](Eds.), *Geographical information systems: priciples, techniques, management and applications: abridged*. (2005). Retrieved from https://pdfs.semanticscholar.org/36e4/8a926046f02f42fb7e18aa50d10fbf8d1f11.pdf
+
+[2] Ayalasomayajula, V., "7 Techniques to Visualize Geospatial Data." *Social Cops*. (2016) . Retrieved from https://blog.socialcops.com/academy/resources/7-techniques-to-visualize-geospatial-data/
+
+[3] Zheng, Y., Ou, Y., Lex, A., & Phillips, J.M., "Visualization of Big Spatial Data using Coresets for Kernel Density Estimates." *Cornell University*. (2017). Retrieved from https://arxiv.org/abs/1709.04453
+
+[4] Leaflet for R., "Leaflet." *R Studio*. (2016). Retrieved from https://rstudio.github.io/leaflet/
+
+[5] 
+```{r cite, echo=FALSE}
+citation('ggmap')
+```
+
+##Addendum: Some more advanced topics on Spatial Statistics for future reading.
+
+Here is a package that I didn't have time to full get into: https://cran.r-project.org/web/packages/spdep/spdep.pdf
+It provides tools for analyzing spatial dependence: weighting schemes, and models.
+
+I came across an analytical course on applied spatial statistics, but this is a whole course on its own, so I'll just post the link should anyone be interested in the future:
+https://scholar.harvard.edu/zhukov/classes/applied-spatial-statistics-r
