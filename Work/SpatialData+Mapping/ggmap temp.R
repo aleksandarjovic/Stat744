@@ -84,14 +84,10 @@ alpha=.7, size=2, data=routeplan) +
 #ggplot(d, aes(x,y)) + geom_line() # I will use this
 
 
-
 #suppose we are interested in specific crimes, we can isolate certain types from our dataset#
 
 #define helper function within tidy (dplyr) #this is similr to defining custom class methods... in essence making special pipes
 `%notin%` = function(setA, setB) !(setA %in% setB) #credit to kahle, checks that setA is not in setB
-
-#crime data found in ggplot for practice: houston jan2010 to aug2010
-#identify important variables so ppl know what they 'll need to do this with other data
 
 # reduce crime to violent crimes in downtown houston
 violent_crimes = crime %>% 
@@ -158,15 +154,17 @@ robberies = violent_crimes %>% filter(offense=='robbery')
 qmplot(lon, lat, data = violent_crimes, geom = "blank", 
        zoom = 15, maptype = "toner-background", legend = "bottomright"
 ) +
-  stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = .35, color = NA) +
+  stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = .35, colour = NA) +
   scale_fill_gradient2("Robbery\nHeatmap", low = "white", mid = "yellow", high = "red", midpoint = 650)
 # add points to the heatmap
 
 #faceting by crime
 (
-qmplot(lon, lat, data = violent_crimes, maptype = "toner-background", color = offense) + 
+qmplot(lon, lat, data = violent_crimes, maptype = "toner-background", colour = offense) + 
   facet_wrap(~ offense)
 )
+
+
 
 #faceting by day
 
@@ -186,10 +184,9 @@ HoustonMap +
 theme_set(theme_bw())
 houmap = qmap("houston",zoom=13, colour='bw', legend ='topleft')
 
-#QUERY LIMIT ISSUES... ??????
 
 (houmap+
-    geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense,size=offense))
+    geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense,shape=location))
 )
 
 (
@@ -204,7 +201,7 @@ houmap+
 houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
 
 (houmap+
-    geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense,size=offense))
+    geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense,shape=location))
 )
 
 (
