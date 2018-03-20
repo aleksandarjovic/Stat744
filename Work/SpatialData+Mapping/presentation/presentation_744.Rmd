@@ -56,7 +56,7 @@ Consider audience, interactivity and nature of data.
 ```{r, message=FALSE}
 library(leaflet)
 library(knitr)
-library(rgdal)
+library(rgdal) #issues on windows, created for OSX
 ```
 
 ##ggmap
@@ -70,7 +70,71 @@ library(ggmap)
 
 #ggmap
 
+* ggmap easily gets raster map tiles from online sources (raster data: simplest form, a raster consists of a matrix of cells (or pixels) organized into rows and columns (or a grid) where each cell can be assigned a value (such as temperature, precipitation, etc).
+* These maps can be digital aerial photographs, imagery from satellites, digital pictures, or even scanned maps.
+* Plots are done then using the ggplot2 framework (where you identify your geom layers).
+* ggmap also has functions for geolocation and routing.
 
+
+## Getting Maps
+
+Before we do anything else, we need our map layer upon which everything else will be plotted.
+
+ggmap has a variety of functions (which have varying parameters) which can pull up maps from popular sources: Google Maps, Stamen Maps, OpenStreetMap
+
+## Retrieving StamenMap
+
+Suppose you want a plain map of North America:
+
+```{r stamenmap}
+mapzone = c(left = -135, bottom = 25.75, right = -62, top = 75) #you specify the box
+map = get_stamenmap(mapzone, zoom = 5, maptype = "toner-lite") 
+ggmap(map) #prints the map for viewing
+```
+
+Note: large ggmaps can grow massively in size (150MB) since they are pieced together
+
+## Retrieving GoogleMap
+
+When retreiving with googlemap, here we only need to center it.
+
+```{r googlemap}
+
+map1 = get_googlemap(center=c(lon=-79.91, lat=43.26),zoom=13, size=c(640,640),scale=2,maptype='terrain') #'satellite','roadmap','hybrid'  are the other maptype offered
+
+ggmap(map1) #hamilton for example, lon,lat very sensitive, so need to convert hours/minutes into a decimal
+#zoom must be whole number, so a bit finnicky
+
+#mcmaster satellite map
+mcmastermap = get_googlemap(center=c(lon=-79.9192, lat=43.2609), zoom=15, maptype = 'satellite'); ggmap(mcmastermap)
+
+#you can get as close as the database permits
+fireball = get_googlemap(center=c(lon=-79.92, lat=43.2609), zoom=19, maptype = 'satellite'); ggmap(fireball)
+```
+
+## Over Querey Limit exceptions
+
+One issue that came up was getting the exception: "Over Query Limit"... even if it's your first time running it.
+
+StackOverFlow suggested a solution:
+
+ggmap v2.7 allows the user to specify a Google Maps API key through the  register_google() function. v2.7 is not on CRAN yet, so you have to use devtools::install_github("dkahle/ggmap") to install it. After updating to that version and setting my API Key register_google(key = "my_api_key"), the same batch worked in one run as expected.
+
+The Google Maps API Key is easy to get: https://developers.google.com/maps/documentation/geocoding/get-api-key  (credit to user: sbha)
+
+## More quick methods with googlemaps
+
+If you'd just like to quickly zoom in on downtown, the following will quickly do the trick.
+```{r moregoog}
+
+#can also just type city (for american cities:
+ggmap(get_googlemap("london england", zoom = 12))
+
+#with piping
+get_googlemap("newyork newyork", zoom = 12) %>% ggmap() #gives me las vegas?
+get_googlemap('toronto canada', zoom=12,maptype='satellite') %>% ggmap() #certain zooms won't 12 does, 13 doesnt, 14 doesnt, 15 does
+get_googlemap('toronto canada', zoom=15, maptype='hybrid') %>% ggmap() #hybrid gives names of landmarks/streets with the satellite
+```
 
 #Leaflet
 
@@ -291,8 +355,10 @@ leaflet(data = mexico) %>%
 
 [4] Leaflet for R., "Leaflet." *R Studio*. (2016). Retrieved from https://rstudio.github.io/leaflet/
 
-
-
+[5] 
+```{r cite, echo=FALSE}
+citation('ggmap')
+```
 
 ## Intro Slide talking about overview of spatial data
 

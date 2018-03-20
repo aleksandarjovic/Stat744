@@ -12,11 +12,10 @@ library(labeling) #needs to be installed for ggmap to work
 #==============MAP RETRIEVAL=============#
 
 #retrieving stamenmap
-mapzone = c(left = -125, bottom = 25.75, right = -67, top = 49) #you specify the box
+mapzone = c(left = -135, bottom = 25.75, right = -62, top = 75) #you specify the box
 map = get_stamenmap(mapzone, zoom = 5, maptype = "toner-lite") #maptype, see different ones
 #careful, large ggmaps can grow massively in size (150MB)
 ggmap(map)
-#stamen maptype is different from google (list?)
 
 #retrieving googlemap, here we only need to center it
 map1 = get_googlemap(center=c(lon=-79.91, lat=43.26),zoom=13, size=c(640,640),scale=2,maptype='terrain') #'satellite','roadmap'
