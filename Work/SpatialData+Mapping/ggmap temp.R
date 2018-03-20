@@ -27,16 +27,32 @@ fireball = get_googlemap(center=c(lon=-79.92, lat=43.2609), zoom=19, maptype = '
 
 #can also just type city (for american cities:
 ggmap(get_googlemap("london england", zoom = 12))
-ggmap(get_googlemap("lasangeles california", zoom = 12, maptype = "satellite"))
+
 #with piping
 get_googlemap("newyork newyork", zoom = 12) %>% ggmap() #gives me las vegas?
 get_googlemap('toronto canada', zoom=12,maptype='satellite') %>% ggmap() #certain zoomes won't 12 does, 13 doesnt 14 doesnt, 15 does
 get_googlemap('toronto canada', zoom=15, maptype='hybrid') %>% ggmap() #hybrid gives names of landmarks/streets with the satellite
 
-#ggmap(map,extent='device') #extent......
 
 #``````````````````````````````````````````````````````````````````````````````
 
+
+#=======Utility: geocode, mapdist, and routing ===============#
+#suppose you need to collect data (for a plot or just in general)
+
+geocode("mcmaster university", output="more")
+
+coordinates = geocode("mcmaster university")%>%as.numeric()
+revgeocode(coordinates)
+
+mapdist(from="toronto",to="hamilton") #observe, won't work
+
+x=c('toronto','boston'); y=c('hamilton, canada','cleveland')
+mapdist(x,y)
+
+
+
+#``````````````````````````````````#
 
 
 #==========qmplot===========#   # "qmplot is that the best way vs not, is it quick and dirty"

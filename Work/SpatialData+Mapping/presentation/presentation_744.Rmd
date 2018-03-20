@@ -128,6 +128,7 @@ If you'd just like to quickly zoom in on downtown, the following will quickly do
 ```{r moregoog}
 
 #can also just type city (for american cities:
+#nested (traditional) look
 ggmap(get_googlemap("london england", zoom = 12))
 
 #with piping
@@ -135,6 +136,41 @@ get_googlemap("newyork newyork", zoom = 12) %>% ggmap() #gives me las vegas?
 get_googlemap('toronto canada', zoom=12,maptype='satellite') %>% ggmap() #certain zooms won't 12 does, 13 doesnt, 14 doesnt, 15 does
 get_googlemap('toronto canada', zoom=15, maptype='hybrid') %>% ggmap() #hybrid gives names of landmarks/streets with the satellite
 ```
+
+# ggmap Utility Functions
+
+## geocode()
+
+Suppose you want to collect location data (if you're assembling a dataset, or just in general).
+Geocode takes an address and returns coordinates.
+```{r geolookup}
+geocode("mcmaster university", output="more")
+```
+output="more" can be specified if you want more extensive information other than just the lat/lon
+
+## revgeocode()
+
+You can also use this package as an atlas of sorts:
+```{r reverse}
+coordinates = geocode("mcmaster university")%>%as.numeric()
+
+revgeocode(coordinates)
+```
+
+## Distances
+
+We can also measure map distances using mapdist(from='x',to='y').
+
+Lesser known, or cities that don't have a unique name require the country (in many cases).
+
+```{r distance}
+mapdist(from="toronto",to="hamilton") #observe, won't work
+
+x=c('toronto','boston'); y=c('hamilton, canada','cleveland')
+mapdist(x,y)
+```
+
+
 
 #Leaflet
 
