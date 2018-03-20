@@ -213,4 +213,50 @@ houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
     )
 )
 
+# pokeymen example
+
+sfmap=ggmap(get_googlemap(center=c(lon=-122.2913, lat=37.8272),zoom=10, size=c(640,640),scale=2,maptype='terrain')) #'satellite','roadmap'
 poke=read_csv('Data/pokemon-spawns.csv')
+
+#location of all pokemon (legend excluded because there are 151)
+sfmap+
+  geom_point(data=poke, aes(x=lng,y=lat,colour=name),size=0.02)+
+  theme(legend.position = "none")
+
+#find snorlax
+snorlax=poke%>%filter(name=="Snorlax")
+
+sfmap+
+  geom_point(data=snorlax, aes(x=lng,y=lat),colour="red",size=2)+
+  theme(legend.position = "none")
+
+#snorlax too rare, too stronk, how about Growlithe (something not too common, but still won't spam the map)
+grow=poke%>%filter(name=="Growlithe")
+
+sfmap+
+  geom_point(data=grow, aes(x=lng,y=lat),colour="red",size=1)+
+  theme(legend.position = "none")
+
+sfmap+
+  geom_density2d(data=grow, aes(x=lng,y=lat),colour="red",size=1)+
+  theme(legend.position = "none")
+
+sfmap+
+  geom_bin2d(data=grow, aes(x=lng,y=lat))+
+  theme(legend.position = "none")
+
+sfmap+
+  stat_density2d(aes(x = lng, y = lat, fill = ..level.., alpha = ..level..),
+                 bins = 5, geom = "polygon",
+                 data = grow) +
+  scale_fill_gradient(low = "black", high = "red")+
+  theme(legend.position= "none")
+
+#we've lost all the growlithes on the san mateo side, let's add more bins (clearly san leandro is where all the growlithes are at)
+
+sfmap+
+  stat_density2d(aes(x = lng, y = lat, fill = ..level.., alpha = ..level..),
+                 bins = 25, geom = "polygon",
+                 data = grow) +
+  scale_fill_gradient(low = "black", high = "red")+
+  theme(legend.position= "none")

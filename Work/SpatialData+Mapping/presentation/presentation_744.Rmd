@@ -417,8 +417,69 @@ Depending on the level of detail we want, we can manually adjust the zoom, and t
 
 Note, it is important that as you zoome in, you'll want to reduce the number of bins, or you may as well just use the dot-plot since each crime will fit uniquely in its own bin.
 
-# Another example
+# Pokemon in San Francisco
 
+Here's a dataset taken from Kaggle. Let's put everything together. We'll be using ggmap (not the qmap -- I still don't see a difference).
+
+```{r}
+sfmap=ggmap(get_googlemap(center=c(lon=-122.2913, lat=37.8272),zoom=10, size=c(640,640),scale=2,maptype='terrain')) #'satellite','roadmap'
+poke=read_csv('Data/pokemon-spawns.csv')
+
+#location of all pokemon (legend excluded because there are 151)
+sfmap+
+  geom_point(data=poke, aes(x=lng,y=lat,colour=name),size=0.02)+
+  theme(legend.position = "none")
+```
+That's a lot of pokeymen. Let's optimize our time, and try to find one of the rarest ones.
+
+```{r}
+#find snorlax
+snorlax=poke%>%filter(name=="Snorlax")
+
+sfmap+
+  geom_point(data=snorlax, aes(x=lng,y=lat),colour="red",size=2)+
+  theme(legend.position = "none")
+```
+Can't do many useful things with such small amounts of data points. Let's pick something uncommon (sweetspot so we don't flood the map again with the common trash).
+
+Let's compare the differences in the maps, similarly to how we started with the crime.
+
+```{r}
+#snorlax too rare, too stronk, how about Growlithe (something not too common, but still won't spam the map)
+grow=poke%>%filter(name=="Growlithe")
+
+sfmap+
+  geom_point(data=grow, aes(x=lng,y=lat),colour="red",size=1)+
+  theme(legend.position = "none")
+
+sfmap+
+  geom_density2d(data=grow, aes(x=lng,y=lat),colour="red",size=1)+
+  theme(legend.position = "none")
+
+sfmap+
+  geom_bin2d(data=grow, aes(x=lng,y=lat))+
+  theme(legend.position = "none")
+```
+
+Let's create a gradiant and compare two different bin sizes.
+```{r}
+sfmap+
+  stat_density2d(aes(x = lng, y = lat, fill = ..level.., alpha = ..level..),
+                 bins = 5, geom = "polygon",
+                 data = grow) +
+  scale_fill_gradient(low = "black", high = "red")+
+  theme(legend.position= "none")
+
+#we've lost all the growlithes on the san mateo side, let's add more bins (clearly san leandro is where all the growlithes are at).
+
+sfmap+
+  stat_density2d(aes(x = lng, y = lat, fill = ..level.., alpha = ..level..),
+                 bins = 25, geom = "polygon",
+                 data = grow) +
+  scale_fill_gradient(low = "black", high = "red")+
+  theme(legend.position= "none")
+```
+Now we'll have our Arcanine in no time.
 
 
 #Leaflet
