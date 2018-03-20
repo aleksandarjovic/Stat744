@@ -1,0 +1,58 @@
+---
+title: "2moremaps"
+author: "Alex(ks)'s Bushby and Jovic"
+date: "March 20, 2018"
+output: html_document
+---
+
+
+##packages
+
+```{r packages}
+library(ggplot2)
+library(tidyverse)
+library(forcats)
+library(labeling)
+library(ggmap)
+```
+
+
+## Over Querey Limit exceptions
+
+One issue that came up was getting the exception: "Over Query Limit"... even if it's your first time running it.
+
+StackOverFlow suggested a solution:
+
+ggmap v2.7 allows the user to specify a Google Maps API key through the  register_google() function. v2.7 is not on CRAN yet, so you have to use devtools::install_github("dkahle/ggmap") to install it. After updating to that version and setting my API Key register_google(key = "my_api_key"), the same batch worked in one run as expected.
+
+The Google Maps API Key is easy to get: https://developers.google.com/maps/documentation/geocoding/get-api-key  (credit to user: sbha)
+
+## Credentials
+
+ggmap will set credentials to the following
+ggmap_credentials()
+#  Google - 
+#     key :  
+#     account_type : standard 
+#     day_limit : 2500 
+#     second_limit : 50 
+#     client :  
+#     signature :
+
+If you have a Google API key, you could get more, but you would need to register.
+register_google(key = "[your key here]", account_type = "premium", day_limit = 10000)
+This will then be checked. Clearly this is an inconvenience, but shouldn't be a problem for regular use.
+
+## More quick methods with googlemaps
+
+If you'd just like to quickly zoom in on downtown, the following will quickly do the trick.
+```{r moregoog}
+#can also just type city (for american cities:
+#nested (traditional) look
+ggmap(get_googlemap("london england", zoom = 12))
+
+#with piping
+get_googlemap("newyork newyork", zoom = 12) %>% ggmap() #gives me las vegas?
+get_googlemap('toronto canada', zoom=12,maptype='satellite') %>% ggmap() #certain zooms won't 12 does, 13 doesnt, 14 doesnt, 15 does
+get_googlemap('toronto canada', zoom=15, maptype='hybrid') %>% ggmap() #hybrid gives names of landmarks/streets with the satellite
+```

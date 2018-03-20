@@ -1,0 +1,61 @@
+---
+title: "get maps"
+author: "Alex(ks)'s Bushby and Jovic"
+date: "March 20, 2018"
+output: html_document
+---
+
+##packages
+
+```{r packages}
+library(ggplot2)
+library(tidyverse)
+library(forcats)
+library(labeling)
+library(ggmap)
+```
+
+
+#ggmap
+
+* ggmap easily gets raster map tiles from online sources (raster data: simplest form, a raster consists of a matrix of cells (or pixels) organized into rows and columns (or a grid) where each cell can be assigned a value (such as temperature, precipitation, etc).
+* These maps can be digital aerial photographs, imagery from satellites, digital pictures, or even scanned maps.
+* Plots are done then using the ggplot2 framework (where you identify your geom layers).
+* ggmap also has functions for geolocation and routing.
+
+
+## Getting Maps
+
+Before we do anything else, we need our map layer upon which everything else will be plotted.
+
+ggmap has a variety of functions (which have varying parameters) which can pull up maps from popular sources: Google Maps, Stamen Maps, OpenStreetMap
+
+## Retrieving StamenMap
+
+Suppose you want a plain map of North America:
+
+```{r stamenmap}
+mapzone = c(left = -135, bottom = 25.75, right = -62, top = 75) #you specify the box
+map = get_stamenmap(mapzone, zoom = 5, maptype = "toner-lite") 
+ggmap(map) #prints the map for viewing
+```
+
+Note: large ggmaps can grow massively in size (150MB) since they are pieced together
+
+## Retrieving GoogleMap
+
+When retreiving with googlemap, here we only need to center it.
+
+```{r googlemap}
+
+map1 = get_googlemap(center=c(lon=-79.91, lat=43.26),zoom=13, size=c(640,640),scale=2,maptype='terrain') #'satellite','roadmap','hybrid'  are the other maptype offered
+
+ggmap(map1) #hamilton for example, lon,lat very sensitive, so need to convert hours/minutes into a decimal
+#zoom must be whole number, so a bit finnicky
+
+#mcmaster satellite map
+mcmastermap = get_googlemap(center=c(lon=-79.9192, lat=43.2609), zoom=15, maptype = 'satellite'); ggmap(mcmastermap)
+
+#you can get as close as the database permits
+fireball = get_googlemap(center=c(lon=-79.92, lat=43.2609), zoom=19, maptype = 'satellite'); ggmap(fireball)
+```

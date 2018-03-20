@@ -1,0 +1,71 @@
+---
+title: "3utility"
+author: "Alex(ks)'s Bushby and Jovic"
+date: "March 20, 2018"
+output: html_document
+---
+##packages
+
+```{r packages}
+library(ggplot2)
+library(tidyverse)
+library(forcats)
+library(labeling)
+library(ggmap)
+```
+
+# ggmap Utility Functions
+
+## geocode()
+
+Suppose you want to collect location data (if you're assembling a dataset, or just in general).
+Geocode takes an address and returns coordinates.
+```{r geolookup}
+geocode("mcmaster university", output="more")
+```
+output="more" can be specified if you want more extensive information other than just the lat/lon
+
+## revgeocode()
+
+You can also use this package as an atlas of sorts:
+```{r reverse}
+coordinates = geocode("mcmaster university")%>%as.numeric()
+
+revgeocode(coordinates)
+```
+
+## Distances
+
+We can also measure map distances using mapdist(from='x',to='y').
+
+Lesser known, or cities that don't have a unique name require the country (in many cases).
+
+```{r distance}
+mapdist(from="toronto",to="hamilton") #observe, won't work
+
+x=c('toronto','boston'); y=c('hamilton, canada','cleveland')
+mapdist(x,y)
+```
+
+## Route planning (the hard way)
+
+We can use route() or trek(). trek() tends to hug the roads more closely.
+
+```{r route}
+routeplan= route(
+  from='mcmaster university',
+  to='guelph university',
+  alternatives= TRUE
+)
+qmap('puslinch, canada', zoom = 10, maptype = 'roadmap',
+     base_layer=ggplot(aes(x=startLon,y=startLat),data=routeplan))+
+  geom_leg(
+    aes(x=startLon,y=startLat,xend=endLon,yend=endLat,
+           colour=route),
+alpha=.7, size=2, data=routeplan) +
+  labs(x="longitude",y="latitude",colour="Route")+
+  facet_wrap(~route,ncol=2)+
+  theme(legend.position='bottom')
+```
+
+Here we used ggplot for the first time, by adding layers to qmap. We will explore it in more detail in the next section.
