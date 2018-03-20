@@ -1,0 +1,430 @@
+---
+title: "ggplot part"
+author: "Alex(ks)'s Bushby and Jovic"
+date: "March 20, 2018"
+output: html_document
+---
+
+##packages
+
+```{r packages}
+library(ggplot2)
+library(tidyverse)
+library(forcats)
+library(labeling)
+library(ggmap)
+```
+
+
+#ggmap
+
+* ggmap easily gets raster map tiles from online sources (raster data: simplest form, a raster consists of a matrix of cells (or pixels) organized into rows and columns (or a grid) where each cell can be assigned a value (such as temperature, precipitation, etc).
+* These maps can be digital aerial photographs, imagery from satellites, digital pictures, or even scanned maps.
+* Plots are done then using the ggplot2 framework (where you identify your geom layers).
+* ggmap also has functions for geolocation and routing.
+
+
+## Getting Maps
+
+Before we do anything else, we need our map layer upon which everything else will be plotted.
+
+ggmap has a variety of functions (which have varying parameters) which can pull up maps from popular sources: Google Maps, Stamen Maps, OpenStreetMap
+
+## Retrieving StamenMap
+
+Suppose you want a plain map of North America:
+
+```{r stamenmap}
+mapzone = c(left = -135, bottom = 25.75, right = -62, top = 75) #you specify the box
+map = get_stamenmap(mapzone, zoom = 5, maptype = "toner-lite") 
+ggmap(map) #prints the map for viewing
+```
+
+Note: large ggmaps can grow massively in size (150MB) since they are pieced together
+
+## Retrieving GoogleMap
+
+When retreiving with googlemap, here we only need to center it.
+
+```{r googlemap}
+
+map1 = get_googlemap(center=c(lon=-79.91, lat=43.26),zoom=13, size=c(640,640),scale=2,maptype='terrain') #'satellite','roadmap','hybrid'  are the other maptype offered
+
+ggmap(map1) #hamilton for example, lon,lat very sensitive, so need to convert hours/minutes into a decimal
+#zoom must be whole number, so a bit finnicky
+
+#mcmaster satellite map
+mcmastermap = get_googlemap(center=c(lon=-79.9192, lat=43.2609), zoom=15, maptype = 'satellite'); ggmap(mcmastermap)
+
+#you can get as close as the database permits
+fireball = get_googlemap(center=c(lon=-79.92, lat=43.2609), zoom=19, maptype = 'satellite'); ggmap(fireball)
+```
+
+## Over Querey Limit exceptions
+
+One issue that came up was getting the exception: "Over Query Limit"... even if it's your first time running it.
+
+StackOverFlow suggested a solution:
+
+ggmap v2.7 allows the user to specify a Google Maps API key through the  register_google() function. v2.7 is not on CRAN yet, so you have to use devtools::install_github("dkahle/ggmap") to install it. After updating to that version and setting my API Key register_google(key = "my_api_key"), the same batch worked in one run as expected.
+
+The Google Maps API Key is easy to get: https://developers.google.com/maps/documentation/geocoding/get-api-key  (credit to user: sbha)
+
+## Credentials
+
+ggmap will set credentials to the following
+ggmap_credentials()
+#  Google - 
+#     key :  
+#     account_type : standard 
+#     day_limit : 2500 
+#     second_limit : 50 
+#     client :  
+#     signature :
+
+If you have a Google API key, you could get more, but you would need to register.
+register_google(key = "[your key here]", account_type = "premium", day_limit = 10000)
+This will then be checked. Clearly this is an inconvenience, but shouldn't be a problem for regular use.
+
+## More quick methods with googlemaps
+
+If you'd just like to quickly zoom in on downtown, the following will quickly do the trick.
+```{r moregoog}
+
+#can also just type city (for american cities:
+#nested (traditional) look
+ggmap(get_googlemap("london england", zoom = 12))
+
+#with piping
+get_googlemap("newyork newyork", zoom = 12) %>% ggmap() #gives me las vegas?
+get_googlemap('toronto canada', zoom=12,maptype='satellite') %>% ggmap() #certain zooms won't 12 does, 13 doesnt, 14 doesnt, 15 does
+get_googlemap('toronto canada', zoom=15, maptype='hybrid') %>% ggmap() #hybrid gives names of landmarks/streets with the satellite
+```
+
+# ggmap Utility Functions
+
+## geocode()
+
+Suppose you want to collect location data (if you're assembling a dataset, or just in general).
+Geocode takes an address and returns coordinates.
+```{r geolookup}
+geocode("mcmaster university", output="more")
+```
+output="more" can be specified if you want more extensive information other than just the lat/lon
+
+## revgeocode()
+
+You can also use this package as an atlas of sorts:
+```{r reverse}
+coordinates = geocode("mcmaster university")%>%as.numeric()
+
+revgeocode(coordinates)
+```
+
+## Distances
+
+We can also measure map distances using mapdist(from='x',to='y').
+
+Lesser known, or cities that don't have a unique name require the country (in many cases).
+
+```{r distance}
+mapdist(from="toronto",to="hamilton") #observe, won't work
+
+x=c('toronto','boston'); y=c('hamilton, canada','cleveland')
+mapdist(x,y)
+```
+
+## Route planning (the hard way)
+
+We can use route() or trek(). trek() tends to hug the roads more closely.
+
+```{r route}
+routeplan= route(
+  from='mcmaster university',
+  to='guelph university',
+  alternatives= TRUE
+)
+qmap('puslinch, canada', zoom = 10, maptype = 'roadmap',
+     base_layer=ggplot(aes(x=startLon,y=startLat),data=routeplan))+
+  geom_leg(
+    aes(x=startLon,y=startLat,xend=endLon,yend=endLat,
+           colour=route),
+alpha=.7, size=2, data=routeplan) +
+  labs(x="longitude",y="latitude",colour="Route")+
+  facet_wrap(~route,ncol=2)+
+  theme(legend.position='bottom')
+```
+
+Here we used ggplot for the first time, by adding layers to qmap. We will explore it in more detail in the next section.
+
+# Visualizing spatial data over a map (Putting it all together)
+
+Pulling up maps in R is a fun distraction, but let's put it together with some data.
+
+## qmplot sidenote
+
+ggmap likes to build its plots in a function called qmplot which is the ggplot equivalent of qplot. Is that a bad thing? It appears that's the way things are done with this package.
+
+qplot is known as the "quick and dirty" way to quickly produce graphs, but it runs into issues when you try to do more complicated things.
+
+example below of qplot vs ggplot (user kohske on stackoverflow)
+
+qplot(x,y, geom="line") # I will use this
+ggplot(data.frame(x,y), aes(x,y)) + geom_line() # verbose
+
+d <- data.frame(x, y)
+
+qplot(x, y, data=d, geom="line") 
+ggplot(d, aes(x,y)) + geom_line() # I will use this
+
+qmap is a "wrapper" for ggmap and get_map: qmap(location = "X", ...)
+
+## Example with the crime dataset
+
+The ggmap package has a 'crime' dataset built in; the dataset contains the crimes for Houston from Januaray to August (2010), geocoded with Google Maps.
+
+```{r crimedata}
+head(crime)
+#View(crime) #for full
+```
+We can see the data contains a lot of useful info: dates, types of crimes, locations by type of place, locations by street, locations by longitude/latitude.
+
+First, let's get an overview of the crimes on the map.
+Using qmplot, we put in longitude and latitude for the x, and y parameters, and specify the data as the crime dataset. This plots the crimes indiscriminantly.
+```{r crime1}
+# to see all crimes
+qmplot(lon, lat, data = crime, maptype = "toner-lite", colour = I("red"),size = I(0.9),alpha=.3) +
+  theme(legend.position="none") #to remove the .3 from the legend (pointless)
+```
+
+## Working with the data
+
+Suppose we are interested in violent crimes in the downtown Houston area.
+
+A slick method to isolate this could involve dplyr to create a 'new pipe' (similar to defining a new class method)
+
+```{r helper}
+`%notin%` = function(setA, setB) !(setA %in% setB) #credit to kahle, checks that setA is not in setB
+
+# reduce crime to violent crimes in downtown houston
+violent_crimes = crime %>% filter(
+    offense %notin% c("auto theft", "theft", "burglary"),
+    -95.39681 <= lon & lon <= -95.34188,
+    29.73631 <= lat & lat <=  29.78400
+  ) %>% 
+  mutate(
+    offense = fct_drop(offense), #drops unused levels, does not drop NA levels that have values, will prevent errors
+    offense = fct_relevel(offense,  #reorders factor levels by hand
+                          c("robbery", "aggravated assault", "rape", "murder")
+    )
+  )
+
+## Here is a traditional way to code it without pipes:
+#
+# qmplot(lon, lat, data = crime)
+# 
+# 
+# # only violent crimes
+# violent_crimes = subset(crime,
+#   offense != "auto theft" &
+#   offense != "theft" &
+#   offense != "burglary"
+# )
+# 
+# # rank violent crimes
+# violent_crimes$offense = factor(
+#   violent_crimes$offense,
+#   levels = c("robbery", "aggravated assault", "rape", "murder")
+# )
+# 
+# # restrict to downtown
+# violent_crimes = subset(violent_crimes,
+#   -95.39681 <= lon & lon <= -95.34188 &
+#    29.73631 <= lat & lat <=  29.78400
+# )
+# 
+# theme_set(theme_bw())
+# 
+# qmplot(lon, lat, data = violent_crimes, colour = offense,
+#   size = I(3.5), alpha = I(.6), legend = "topleft")
+# 
+# qmplot(lon, lat, data = violent_crimes, geom = c("point","density2d"))
+# qmplot(lon, lat, data = violent_crimes) + facet_wrap(~ offense)
+# qmplot(lon, lat, data = violent_crimes, extent = "panel") + facet_wrap(~ offense)
+# qmplot(lon, lat, data = violent_crimes, extent = "panel", colour = offense, darken = .4) +
+#   facet_wrap(~ month)
+
+qmplot(lon, lat, data = violent_crimes, maptype = "toner-lite", colour = I("red"),size = I(0.9),alpha=.3) +
+  theme(legend.position="none")
+```
+
+## Different visualizations
+
+In the previous example, the geom parameter is set by default to "point". Let's see it with the countour and bin geometries:
+```{r}
+qmplot(x=lon, y=lat, data = violent_crimes, maptype = "toner-2011", geom = "density2d", colour = I("red"),size=I(1))
+
+qmplot(x=lon, y=lat, data = violent_crimes, maptype = "toner-2011", geom = "bin2d")
+```
+Neither of these graphs are particularly great, so let's see if we can improve on them.
+The countour is a bit hard to tell what areas have higher crime, and the bins are differentiated by hue, but it clashes a bit with the map itself. Trying to colour the bin puts a border around it, which only makes the hue harder to distinguish (optical illusion).
+
+## Heatmap
+
+To make the countour map more useful, we can assign a gradient. Let's look at the robberies:
+
+```{r robberies}
+
+robberies = violent_crimes %>% filter(offense=='robbery')
+
+qmplot(lon, lat, data = violent_crimes, geom = "blank", 
+       zoom = 15, maptype = "toner-background", legend = "bottomright"
+) +
+  stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha = .35, colour = NA) +
+  scale_fill_gradient2("Robbery\nHeatmap", low = "white", mid = "yellow", high = "red", midpoint = 650)
+
+```
+
+## Faceting different categories, and not using qmplot
+
+We can also look at different things, depending on what we're interested in:
+
+```{r facets}
+
+#faceting by crime
+(
+qmplot(lon, lat, data = violent_crimes, maptype = "toner-background", colour = offense) + 
+  facet_wrap(~ offense)
+)
+
+#faceting by day
+
+#First specify your map
+houston = get_googlemap('houston texas', zoom=15, maptype='roadmap')
+ggmap(houston)
+
+#then add the layers like we would in ggplot
+HoustonMap = ggmap(houston, base_layer = ggplot(aes(x = lon, y = lat),
+                                                 data = violent_crimes))
+HoustonMap +
+  stat_density2d(aes(x = lon, y = lat, fill = ..level.., alpha = ..level..),
+                 bins = 5, geom = "polygon",
+                 data = violent_crimes) +
+  scale_fill_gradient(low = "black", high = "red") +
+  facet_wrap(~ day) +
+  theme(legend.position="none")
+```
+
+The map we supplied here (roadmap with google) is probably a bit too colourful, but this is just to illustrate the capabilities.
+
+The following was VERY experimental, and I couldn't get it to work out properly... perhaps too many locations, but the idea is that we can include more information by adding an additional piece to the legend --> We let the offense be coded by colour, and the goal was to let the type of location be denoted by a particular symbol.
+
+```{r try}
+theme_set(theme_bw())
+houmap = qmap("houston",zoom=13, colour='bw', legend ='topleft')
+
+(houmap+
+    geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense,shape=location))
+)
+
+(houmap+
+    geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense,shape=location))+
+    theme(legend.position="none")
+)
+```
+
+We can also put the data into bins if we are interested in an overview (if we are more interested in zones).
+
+```{r bin}
+(
+houmap+
+    stat_bin2d(
+      data=violent_crimes,
+      aes(x=lon,y=lat,colour=offense,fill=offense),
+      size=0.6, bins= 90, alpha=.4
+    )
+)
+#compare to closer, we can use less bins
+houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
+
+(houmap+
+    geom_point(data=violent_crimes, aes(x=lon,y=lat,colour=offense))
+)
+
+(
+  houmap+
+    stat_bin2d(
+      data=violent_crimes,
+      aes(x=lon,y=lat,colour=offense,fill=offense),
+      size=0.6, bins= 30, alpha=.4
+    )
+)
+
+```
+Depending on the level of detail we want, we can manually adjust the zoom, and the bin number.
+
+Note, it is important that as you zoome in, you'll want to reduce the number of bins, or you may as well just use the dot-plot since each crime will fit uniquely in its own bin.
+
+# Pokemon in San Francisco
+
+Here's a dataset taken from Kaggle. Let's put everything together. We'll be using ggmap (not the qmap -- I still don't see a difference).
+
+```{r}
+sfmap=ggmap(get_googlemap(center=c(lon=-122.2913, lat=37.8272),zoom=10, size=c(640,640),scale=2,maptype='terrain')) #'satellite','roadmap'
+poke=read_csv('Data/pokemon-spawns.csv')
+
+#location of all pokemon (legend excluded because there are 151)
+sfmap+
+  geom_point(data=poke, aes(x=lng,y=lat,colour=name),size=0.02)+
+  theme(legend.position = "none")
+```
+That's a lot of pokeymen. Let's optimize our time, and try to find one of the rarest ones.
+
+```{r}
+#find snorlax
+snorlax=poke%>%filter(name=="Snorlax")
+
+sfmap+
+  geom_point(data=snorlax, aes(x=lng,y=lat),colour="red",size=2)+
+  theme(legend.position = "none")
+```
+Can't do many useful things with such small amounts of data points. Let's pick something uncommon (sweetspot so we don't flood the map again with the common trash).
+
+Let's compare the differences in the maps, similarly to how we started with the crime.
+
+```{r}
+#snorlax too rare, too stronk, how about Growlithe (something not too common, but still won't spam the map)
+grow=poke%>%filter(name=="Growlithe")
+
+sfmap+
+  geom_point(data=grow, aes(x=lng,y=lat),colour="red",size=1)+
+  theme(legend.position = "none")
+
+sfmap+
+  geom_density2d(data=grow, aes(x=lng,y=lat),colour="red",size=1)+
+  theme(legend.position = "none")
+
+sfmap+
+  geom_bin2d(data=grow, aes(x=lng,y=lat))+
+  theme(legend.position = "none")
+```
+
+Let's create a gradiant and compare two different bin sizes.
+```{r}
+sfmap+
+  stat_density2d(aes(x = lng, y = lat, fill = ..level.., alpha = ..level..),
+                 bins = 5, geom = "polygon",
+                 data = grow) +
+  scale_fill_gradient(low = "black", high = "red")+
+  theme(legend.position= "none")
+
+#we've lost all the growlithes on the san mateo side, let's add more bins (clearly san leandro is where all the growlithes are at).
+
+sfmap+
+  stat_density2d(aes(x = lng, y = lat, fill = ..level.., alpha = ..level..),
+                 bins = 25, geom = "polygon",
+                 data = grow) +
+  scale_fill_gradient(low = "black", high = "red")+
+  theme(legend.position= "none")
+```
+Now we'll have our Arcanine in no time.
