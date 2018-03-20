@@ -706,58 +706,10 @@ leaflet(data = mexico) %>%
 citation('ggmap')
 ```
 
-## Intro Slide talking about overview of spatial data
+##Addendum: Some more advanced topics on Spatial Statistics for future reading.
 
-- what is
-- why/when use
-- advantages/disadvantages
+Here is a package that I didn't have time to full get into: https://cran.r-project.org/web/packages/spdep/spdep.pdf
+It provides tools for analyzing spatial dependence: weighting schemes, and models.
 
-
-#GGmap 
-
-citation('ggmap') #david kahle & hadley wickham
-
-
-Can put words here on the tile too
-
-#Overview
-
-##
-
-test, no title
-
-## Packages
-
-
-
-
-<!-- #If anything is similar/crossover can rearrange pres so our individual sections can intertwine rather than 'part 1, part 2' (if relevant)
-
-<!--(leaving this below for reference when making slides)
-
-## R Markdown
-
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
-
-## Slide with Bullets
-
-- Bullet 1
-- Bullet 2
-- Bullet 3
-
-## Slide with R Output
-
-```{r cars, echo = TRUE}
-summary(cars)
-```
-
-## Slide with Plot
-
-```{r pressure}
-plot(pressure)
-```
-
--->
-
+I came across an analytical course on applied spatial statistics, but this is a whole course on its own, so I'll just post the link should anyone be interested in the future:
+https://scholar.harvard.edu/zhukov/classes/applied-spatial-statistics-r
