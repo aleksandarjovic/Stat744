@@ -122,6 +122,22 @@ ggmap v2.7 allows the user to specify a Google Maps API key through the  registe
 
 The Google Maps API Key is easy to get: https://developers.google.com/maps/documentation/geocoding/get-api-key  (credit to user: sbha)
 
+## Credentials
+
+ggmap will set credentials to the following
+ggmap_credentials()
+#  Google - 
+#     key :  
+#     account_type : standard 
+#     day_limit : 2500 
+#     second_limit : 50 
+#     client :  
+#     signature :
+
+If you have a Google API key, you could get more, but you would need to register.
+register_google(key = "[your key here]", account_type = "premium", day_limit = 10000)
+This will then be checked. Clearly this is an inconvenience, but shouldn't be a problem for regular use.
+
 ## More quick methods with googlemaps
 
 If you'd just like to quickly zoom in on downtown, the following will quickly do the trick.
@@ -169,6 +185,70 @@ mapdist(from="toronto",to="hamilton") #observe, won't work
 x=c('toronto','boston'); y=c('hamilton, canada','cleveland')
 mapdist(x,y)
 ```
+
+## Route planning (the hard way)
+
+We can use route() or trek(). trek() tends to hug the roads more closely.
+
+```{r route}
+routeplan= route(
+  from='mcmaster university',
+  to='guelph university',
+  alternatives= TRUE
+)
+qmap('puslinch, canada', zoom = 10, maptype = 'roadmap',
+     base_layer=ggplot(aes(x=startLon,y=startLat),data=routeplan))+
+  geom_leg(
+    aes(x=startLon,y=startLat,xend=endLon,yend=endLat,
+           colour=route),
+alpha=.7, size=2, data=routeplan) +
+  labs(x="longitude",y="latitude",colour="Route")+
+  facet_wrap(~route,ncol=2)+
+  theme(legend.position='bottom')
+```
+
+Here we used ggplot for the first time, by adding layers to qmap. We will explore it in more detail in the next section.
+
+# Visualizing spatial data over a map (Putting it all together)
+
+Pulling up maps in R is a fun distraction, but let's put it together with some data.
+
+## qmplot sidenote
+
+ggmap likes to build its plots in a function called qmplot which is the ggplot equivalent of qplot. Is that a bad thing? It appears that's the way things are done with this package.
+
+qplot is known as the "quick and dirty" way to quickly produce graphs, but it runs into issues when you try to do more complicated things.
+
+example below of qplot vs ggplot (user kohske on stackoverflow)
+
+qplot(x,y, geom="line") # I will use this
+ggplot(data.frame(x,y), aes(x,y)) + geom_line() # verbose
+
+d <- data.frame(x, y)
+
+qplot(x, y, data=d, geom="line") 
+ggplot(d, aes(x,y)) + geom_line() # I will use this
+
+qmap is a "wrapper" for ggmap and get_map: qmap(location = "X", ...)
+
+## Example with the crime dataset
+
+The ggmap package has a 'crime' dataset built in; the dataset contains the crimes for Houston from Januaray to August (2010), geocoded with Google Maps.
+
+```{r crimedata}
+head(crime)
+#View(crime) #for full
+```
+We can see the data contains a lot of useful info: dates, types of crimes, locations by type of place, locations by street, locations by longitude/latitude.
+
+First, let's get an overview of the crimes on the map.
+Using qmplot, we put in longitude and latitude for the x, and y parameters, and specify the data as the crime dataset. This plots the crimes indiscriminantly.
+```{r crime1}
+# to see all crimes
+qmplot(lon, lat, data = crime, maptype = "toner-lite", colour = I("red"),size = I(0.9),alpha=.3) +
+  theme(legend.position="none") #to remove the .3 from the legend (pointless)
+```
+
 
 
 

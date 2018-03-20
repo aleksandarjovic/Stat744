@@ -50,6 +50,20 @@ mapdist(from="toronto",to="hamilton") #observe, won't work
 x=c('toronto','boston'); y=c('hamilton, canada','cleveland')
 mapdist(x,y)
 
+routeplan= route(
+  'mcmaster university',
+  'guelph university',
+  alternatives= TRUE
+)
+qmap('puslinch, canada', zoom = 10, maptype = 'roadmap',
+     base_layer=ggplot(aes(x=startLon,y=startLat),data=routeplan))+
+  geom_leg(
+    aes(x=startLon,y=startLat,xend=endLon,yend=endLat,
+           colour=route),
+alpha=.7, size=2, data=routeplan) +
+  labs(x="longitude",y="latitude",colour="Route")+
+  facet_wrap(~route,ncol=2)+
+  theme(legend.position='bottom')
 
 
 #``````````````````````````````````#
@@ -127,6 +141,8 @@ violent_crimes = crime %>%
 # qmplot(lon, lat, data = violent_crimes, extent = "panel", colour = offense, darken = .4) +
 #   facet_wrap(~ month)
 
+# to see all crimes
+qmplot(lon, lat, data = crime, maptype = "toner-lite", colour = I("red"),size = I(0.9),alpha=.3) + theme(legend.position="none")
 
 # use qmplot to make a scatterplot on a map
 qmplot(lon, lat, data = violent_crimes, maptype = "toner-lite", colour = I("red"),size = I(0.9),alpha=.3)
@@ -199,13 +215,3 @@ houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
       size=0.6, bins= 30, alpha=.4
     )
 )
-
-#weather dataset, polution?
-#freedom of information act, new york dog licenses data ??
-
-#toronto data maybe, find some exercise.
-#fill permits hamilton
-#"open data hamilton" film permits by ward
-
-# put presentation together: overview of when to use, principles
-# happy git with R, git config credential helper
