@@ -417,6 +417,10 @@ Depending on the level of detail we want, we can manually adjust the zoom, and t
 
 Note, it is important that as you zoome in, you'll want to reduce the number of bins, or you may as well just use the dot-plot since each crime will fit uniquely in its own bin.
 
+# Another example
+
+
+
 #Leaflet
 
 [Leaflet for R](https://rstudio.github.io/leaflet/) is where I learned how to use Leaflet. It is a great resource, so refer to it if you need more clarification.

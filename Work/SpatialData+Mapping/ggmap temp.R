@@ -212,3 +212,5 @@ houmap = qmap("houston",zoom=14, colour='bw', legend ='topleft')
       size=0.6, bins= 30, alpha=.4
     )
 )
+
+poke=read_csv('Data/pokemon-spawns.csv')
