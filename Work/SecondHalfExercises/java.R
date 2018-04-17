@@ -3,7 +3,7 @@ library(sunburstR)
 library(pgmm)
 
 data(coffee)
-x=coffee[,-1]
+x=coffee[,-1] ## BMB: should select by name if possible
 
 sunburst(x)
 #coffee's by state, although, I don't think this is the best form of data, since need a sequence data to avoid just making a glorified pie chart
@@ -19,7 +19,9 @@ d3heatmap(x[,-1],
           k_row = 3,
           xaxis_font_size = "6pt"
 )
-#Here the beans are identified by number, but that could be later looked up in a table. Country column needed to be omitted
+##Here the beans are identified by number, but that could be later looked up in a table. Country column needed to be omitted
+## BMB: "but you can look it up in a table" sort of defeats the purpose
+##  of visualization, doesn't it?
 
 y=mtcars
 d3heatmap(y, 
