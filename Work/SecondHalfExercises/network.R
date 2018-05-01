@@ -18,6 +18,7 @@ plot(g)
 #for future reference, here is an excellent link with a lot of really fantastic examples: http://kateto.net/network-visualization
 #Here's an example for network of businesses
 
+## JD: Thanks and sorry for inconvenience ☺
 
 ##Dynamic example##
 library(ndtv)
@@ -33,6 +34,8 @@ plot(short.stergm.sim) #this plots network without any time (combines all nodes 
 plot(network.extract(short.stergm.sim, at=5)) #this shows the network at time=5
 
 #this next part uses the d3 from the java presentation
+# JD: Again, your script should run start-finish. 
 render.d3movie(short.stergm.sim,displaylabels=TRUE)
 
 #pretty neat stuff, check out the link for tons more
+# JD: Yes, we will look at this for next year

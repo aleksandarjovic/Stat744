@@ -1,6 +1,10 @@
 #interactive graphics exercise
 library(tidyverse)
 library(ggvis)
+library(googleVis)
+
+## JD: Please check your code beginning-to-end
+## This one did not include googleVis
 
 ##motion graphs##
 #using the disease data: perhaps not best suited since not enough continuous covariates... so end up reusing x axis as the time and y axis as the cases.
@@ -27,6 +31,8 @@ y=mtcars
 y=y%>% mutate(car=rownames(mtcars))
 #oddly the rownames aren't column 1, so we mutate that in
 #suppose we only want energy efficient brands
+
+## JD: Yeah, rownames are weird, which I guess is why tidyverse doesn't use them.
 y=y%>% filter(mpg>25)
 
 x=data.frame(car=y[,12],
@@ -36,6 +42,8 @@ bar1 <- gvisBarChart(x)
 plot(bar1)
 column1 <- gvisColumnChart(x)
 plot(column1)
+
+## JD: I don't really like all of these pix with no units on the axes and different units on the same scale and so on. But I guess you've proved your point about making decent dynamic graphs
 
 #clearly putting these on a common scale doesn't achieve much, but it's possible, if we just want to see raw values
 #perhaps we standardize it first then plot
